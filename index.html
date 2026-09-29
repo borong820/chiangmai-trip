@@ -370,7 +370,7 @@ function pinIcon(s){
 }
 function initMap(){
   map=L.map('map').setView([18.795,98.985],12);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'© OpenStreetMap © CARTO'}).addTo(map);
   SHOPS.forEach(s=>{
     const mk=L.marker([s.lat,s.lng],{icon:pinIcon(s)}).addTo(map);
     mk.bindPopup(`<b>${s.name}</b><br><span style="font-size:12px;color:#666">${s.intro||''}</span><br><a href="javascript:openShop('${s.id}')" style="color:#d9622b">看详情 →</a>`);
