@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>清迈行程小助手 · 11.4–11.11</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#faf6ef;--card:#fff;--ink:#2b2b2b;--muted:#8a8a8a;--accent:#d9622b;--accent2:#f5a623;--green:#1e9e6a;--red:#e05252;--line:#eee5d5}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+#app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:76px}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#d9622b,#f5a623);color:#fff;padding:14px 16px 12px}
+header h1{font-size:18px;font-weight:700}
+header .sub{font-size:12px;opacity:.92;margin-top:2px}
+#progress{margin-top:8px;background:rgba(255,255,255,.28);border-radius:99px;height:8px;overflow:hidden}
+#progress i{display:block;height:100%;width:0;background:#fff;border-radius:99px;transition:width .3s}
+#progress-txt{font-size:11px;margin-top:4px;opacity:.92}
+main{padding:12px 12px 0}
+.tab{display:none}.tab.active{display:block}
+.deadline{background:#fff7e8;border:1px solid #f5d9a8;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px}
+.deadline b{color:var(--accent)}
+.deadline li{margin-left:18px;margin-top:2px}
+.day{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.day-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.day-head .date{font-size:16px;font-weight:700;color:var(--accent)}
+.day-head .wd{font-size:12px;color:var(--muted)}
+.day-head .tag{margin-left:auto;font-size:11px;background:#f3ede0;color:#a07c3f;padding:2px 8px;border-radius:99px}
+.day-head .tag.todo{background:#e8f4ff;color:#2b7bb9}
+.ev{display:flex;gap:10px;padding:6px 0;border-top:1px dashed var(--line);font-size:13px}
+.ev:first-of-type{border-top:none}
+.ev .t{flex:0 0 52px;color:var(--accent);font-weight:600;font-size:12px;padding-top:2px}
+.ev .x b{display:block;font-weight:600}
+.ev .x span{color:var(--muted);font-size:12px}
+.card{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.card h3{font-size:15px;margin-bottom:6px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+.row:first-of-type{border-top:none}
+.row .k{color:var(--muted)}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.pill.open{background:#e6f7ee;color:var(--green)}
+.pill.closed{background:#fdeaea;color:var(--red)}
+.pill.unknown{background:#f1f1f1;color:var(--muted)}
+.shopitem{display:flex;gap:10px;background:var(--card);border-radius:12px;padding:10px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);cursor:pointer}
+.shopitem img{width:74px;height:74px;object-fit:cover;border-radius:10px;flex:0 0 74px;background:#eee}
+.shopitem .info{flex:1;min-width:0}
+.shopitem .info b{font-size:14px}
+.shopitem .info .desc{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shopitem .meta{display:flex;gap:6px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.shopitem .dist{font-size:12px;color:var(--accent);font-weight:600}
+.cat{font-size:11px;background:#f3ede0;color:#a07c3f;padding:2px 8px;border-radius:99px}
+.checkbtn{font-size:12px;border:1px solid var(--accent);color:var(--accent);background:#fff;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.checkbtn.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tier{font-size:11px;border-radius:99px;padding:2px 8px;font-weight:700;white-space:nowrap}
+.tier.t1{background:#fff4d6;color:#9a6b00;border:1px solid #f0d48a}
+.tier.t2{background:#eef4ff;color:#2b5fc7;border:1px solid #c3d6f5}
+.tier.t3{background:#f1f1f1;color:#888;border:1px solid #ddd}
+.wishitem{display:flex;gap:10px;background:var(--card);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.05);align-items:flex-start}
+.wishitem .info{flex:1;min-width:0}
+.wishitem .info b{font-size:14px}
+.wishitem .info .desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.wishitem .tag{font-size:11px;color:var(--accent);background:#fdf3e3;border-radius:99px;padding:2px 8px;margin-top:6px;display:inline-block}
+.wishitem.done{opacity:.55}
+.wishitem.done b{text-decoration:line-through}
+.checkbtn.done{background:var(--green);border-color:var(--green);color:#fff}
+#map{height:calc(100vh - 220px);min-height:420px;border-radius:14px;overflow:hidden}
+.mapbar{display:flex;gap:8px;margin-bottom:10px}
+.btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px;font-size:14px;font-weight:600}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+#modal{position:fixed;inset:0;z-index:100;display:none}
+#modal.show{display:block}
+#modal .mask{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+#modal .sheet{position:absolute;left:0;right:0;bottom:0;max-width:520px;margin:0 auto;background:#fff;border-radius:18px 18px 0 0;max-height:88vh;overflow-y:auto;padding:0 0 24px}
+#modal .sheet img.hero{width:100%;height:190px;object-fit:cover;border-radius:18px 18px 0 0;background:#eee}
+#modal .body{padding:14px 16px}
+#modal h2{font-size:18px;margin-bottom:4px}
+#modal .addr{font-size:12px;color:var(--muted);margin-bottom:8px}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-top:1px solid var(--line)}
+.kv .k{color:var(--muted);flex:0 0 76px}
+.linkbtn{display:block;text-align:center;background:#f6f1e7;color:var(--accent);border-radius:12px;padding:10px;margin-top:10px;font-size:14px;font-weight:600;text-decoration:none}
+.linkbtn.dark{background:var(--accent);color:#fff}
+#modal .close{position:absolute;top:10px;right:12px;background:rgba(0,0,0,.45);color:#fff;border:none;width:30px;height:30px;border-radius:50%;font-size:16px}
+.searchbar{display:flex;gap:8px;margin-bottom:10px}
+.searchbar input{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px;background:#fff;outline:none}
+.chips{display:flex;gap:8px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px}
+.chip{flex:0 0 auto;font-size:13px;padding:6px 14px;border-radius:99px;background:#fff;border:1px solid var(--line);color:var(--muted)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.conv{display:flex;gap:8px;align-items:center}
+.conv input{flex:1;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;background:#fff;outline:none;text-align:center}
+.conv .eq{font-size:18px;color:var(--muted)}
+.convres{text-align:center;font-size:15px;margin-top:10px}
+.convres b{color:var(--accent);font-size:20px}
+#tabbar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:#fff;border-top:1px solid var(--line);display:flex;max-width:520px;margin:0 auto;padding-bottom:env(safe-area-inset-bottom)}
+#tabbar button{flex:1;background:none;border:none;padding:8px 0 6px;font-size:11px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px}
+#tabbar button .ic{font-size:20px;line-height:1}
+#tabbar button.on{color:var(--accent);font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:30px 0;font-size:13px}
+.tips{font-size:12px;color:var(--muted);background:#fff;border-radius:10px;padding:8px 12px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+<h1>🛵 清迈行程小助手</h1>
+<div class="sub">2026.11.4 – 11.11 · borong 的第二次清迈</div>
+<div id="progress"><i></i></div>
+<div id="progress-txt">打卡 0/16</div>
+</header>
+<main>
+<!-- 行程 -->
+<section class="tab active" id="tab-plan">
+<div class="deadline"><b>⏰ 时间死线（别错过）</b><ul>
+<li><b>11/5、11/6 上午</b>：Gong Kong Market（每月只开这两天）</li>
+<li><b>11/4、11/5、11/6 晚上</b>：Lotus's 莲花夜市（仅周三–五）</li>
+<li><b>11/7 周六</b>：上午打铁 → 晚上周六夜市找冰箱贴爷爷（都在 Wua Lai 路一带）</li>
+<li><b>11/8 周日</b>：晚上周日步行街（塔佩门）</li>
+</ul></div>
+<div id="plan-list"></div>
+</section>
+<!-- 地图 -->
+<section class="tab" id="tab-map">
+<div class="mapbar">
+<button class="btn ghost" id="loc-btn">📍 我的位置</button>
+<button class="btn ghost" id="fit-btn">🗺️ 显示全部</button>
+</div>
+<div class="tips">图钉颜色：🔴吃 🟠市场 🟢体验 🟣购物 ⚫住宿 · ✅=已打卡。点图钉看详情。</div>
+<div id="map"></div>
+</section>
+<!-- 附近 -->
+<section class="tab" id="tab-near">
+<div class="tips" id="near-tip">点下方按钮获取位置，按距离给你排好。</div>
+<div class="mapbar"><button class="btn" id="near-btn">📍 按距离排序附近店铺</button></div>
+<div id="near-list"></div>
+</section>
+<!-- 店铺 -->
+<section class="tab" id="tab-shops">
+<div class="searchbar"><input id="q" placeholder="搜店名…"></div>
+<div class="chips" id="chips"></div>
+<div class="chips" id="chips-tier"></div>
+<div id="shop-list"></div>
+<div class="card"><h3>📌 无精确定位的收藏（列表收录）</h3><div id="extra-list"></div></div>
+</section>
+<!-- 想去清单 -->
+<section class="tab" id="tab-wish">
+<div class="tips">💡 非必去清单：顺路经过就去，不用专门跑一趟。勾选=已打卡/已买到。</div>
+<div id="wish-list"></div>
+<div class="mapbar"><button class="btn" id="wish-add">＋ 添加自己想去的</button></div>
+</section>
+<!-- 工具 -->
+<section class="tab" id="tab-tools">
+<div class="card"><h3>💱 泰铢 ↔ 人民币 <span style="font-size:11px;color:var(--muted)">约 5铢 ≈ 1块</span></h3>
+<div class="conv"><input id="thb" inputmode="decimal" placeholder="泰铢 THB"><span class="eq">≈</span><input id="cny" inputmode="decimal" placeholder="人民币 CNY"></div>
+<div class="convres" id="convres"></div></div>
+<div class="card"><h3>✈️ 航班（春秋航空·已订）</h3>
+<div class="row"><span class="k">去程 9C8933 · 11/4</span><span>05:55 广州T3 → 08:15 清迈</span></div>
+<div class="row"><span class="k">回程 9C8934 · 11/11</span><span>21:40 清迈 → 02:00+1 广州</span></div></div>
+<div class="card"><h3>🏨 住宿</h3>
+<div class="row"><span class="k">11/4–11/8 古城</span><span>Wachira@Rachamankha<br>订单11574 · 到店付3600铢<br>14:00入住 / 12:00退房</span></div>
+<div class="row"><span class="k">11/8–11/11 宁曼</span><span>29 Nimmanahaemin Soi 3</span></div></div>
+<div class="card"><h3>📝 实用备忘</h3>
+<div class="row"><span class="k">远郊包车</span><span>约2000–3000铢/天（400–600元）</span></div>
+<div class="row"><span class="k">丛林飞跃</span><span>约早场（7:30–9:00接）；跟拍200–400铢现金</span></div>
+<div class="row"><span class="k">泰拳 FIT</span><span>+66 93 554 2293 / FB私信预约</span></div>
+<div class="row"><span class="k">11月气候</span><span>凉季 16–28°C，早晚加件外套</span></div></div>
+</section>
+</main>
+<nav id="tabbar">
+<button data-t="plan" class="on"><span class="ic">🗓️</span>行程</button>
+<button data-t="map"><span class="ic">🗺️</span>地图</button>
+<button data-t="near"><span class="ic">📍</span>附近</button>
+<button data-t="shops"><span class="ic">🏪</span>店铺</button>
+<button data-t="wish"><span class="ic">💡</span>想去</button>
+<button data-t="tools"><span class="ic">🧰</span>工具</button>
+</nav>
+</div>
+<div id="modal"><div class="mask"></div><div class="sheet">
+<button class="close" id="modal-close">✕</button>
+<img class="hero" id="m-photo" alt="">
+<div class="body">
+<h2 id="m-name"></h2><div class="addr" id="m-addr"></div>
+<div id="m-status" style="margin-bottom:6px"></div>
+<div id="m-kv"></div>
+<div id="m-tips" style="font-size:13px;background:#fff7e8;border-radius:10px;padding:10px 12px;margin-top:10px"></div>
+<a class="linkbtn" id="m-note" target="_blank">📕 看小红书笔记</a>
+<a class="linkbtn" id="m-gmap" target="_blank">🗺️ 在 Google Maps 打开</a>
+<a class="linkbtn dark" id="m-nav" target="_blank">🧭 导航过去</a>
+<button class="linkbtn" id="m-check" style="border:none;width:100%;cursor:pointer"></button>
+</div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ===== 数据（来自用户小红书收藏夹「泰兰德」，2026-09-29 整理；评论区挖宝新增同日） ===== */
+const XHS='https://www.xiaohongshu.com/explore/';
+const PH='__PHOTO__'; // 占位，后续替换为实拍图
+const SHOPS=[
+{id:'jenmoy',tier:2,tierWhy:'夜宵烧烤，17:00才开门',name:'Jen Moy',cat:'eat',catName:'吃',lat:18.79083222,lng:99.00889411,hours:'17:00–22:30',price:'—',intro:'夜宵烧烤',tips:'17:00 才开门，适合当夜宵。',note:XHS+'69231566000000000d00d31d',photo:'https://i.autoreserve.com/thumb/400x400/restaurant_image/image/049/035/542/49035542/4ccb437c-0cdf-483c-9644-438511010493.jpg?format=webp'},
+{id:'aroi',tier:3,tierWhy:'有网友反映关门/搬迁，去之前先确认',name:'Aroi Jum Zap',cat:'eat',catName:'吃',lat:18.79501,lng:98.97093,hours:'',price:'—',intro:'猪锅（店名来自评论区）',tips:'注意：有笔记评论区反映关门/搬迁，去之前最好 Google Maps 确认还在营业。',note:XHS+'6a0372d50000000035022625',photo:'https://theksdesigns.com/wp-content/uploads/2023/12/Aroi-Chiang-Mai-Restaurant1-768x380.webp'},
+{id:'ancient',tier:2,tierWhy:'Top1牛排饭，收藏夹里呼声高',name:'Ancient Beef Thai Cuisine',cat:'eat',catName:'吃',lat:18.78502,lng:99.00066,addr:'95 Chang Klan Rd',hours:'',price:'—',intro:'Top1 牛排饭',tips:'',note:XHS+'6951feca0000000022022319',photo:'https://cdn.localoria.com/16513-llphoto-3.jpg'},
+{id:'aoyjai',tier:2,tierWhy:'打抛饭专门店',name:'Aoyjai Kitchen',cat:'eat',catName:'吃',lat:18.78363,lng:98.98727,addr:'Phra Pokklao Soi 4',hours:'',price:'109铢≈22元（豪华版）',intro:'打抛饭专门店',tips:'109 铢的豪华版打抛饭是招牌；只能现金；饭点排队十几分钟，老板很热情。',note:XHS+'690de518000000000300c306',photo:'https://www.bloggang.com/data/e/emilia0412/picture/1662969302.jpg'},
+{id:'toffee',tier:2,tierWhy:'宁曼咖啡，吞拿鱼三明治好吃',name:'Toffee Roasters',cat:'eat',catName:'吃',lat:18.79861,lng:98.96743,addr:'Nimman Soi 5',hours:'',price:'—',intro:'宁曼路咖啡，吞拿鱼三明治好吃',tips:'',note:XHS+'6a9ffc4e0000000026030e3e',photo:'https://www.ktc.co.th/upload/pub/media/Article/02/Toffee-Roasters-650x650.webp'},
+{id:'warorot',tier:2,tierWhy:'清迈最大传统市场，伴手礼一站式',name:'瓦洛洛市场 Warorot Market',cat:'market',catName:'市场',lat:18.7902,lng:99.00115,addr:'Wichayanon Rd',hours:'白天',price:'—',intro:'清迈最大传统市场，买伴手礼',tips:'买伴手礼的好地方，白天去。',note:XHS+'6a547b7d000000000f017cd5',photo:PH},
+{id:'malin',tier:3,tierWhy:'网友实测：前门可不去，不如后门夜市',name:'清迈大学夜市 Malin Plaza',cat:'market',catName:'市场',lat:18.80812,lng:98.95657,hours:'晚上',price:'—',intro:'清迈大学正门夜市',tips:'',note:XHS+'6752d0e7000000000702816b',photo:'https://thailandtriptips.com/img-folder/images/700x500w/17165/1716532/1716532921.JPEG'},
+{id:'gongkong',tier:1,tierWhy:'每月只开11/5、11/6上午，错过等下个月',name:'Gong Kong Market',cat:'market',catName:'市场',lat:18.79327,lng:98.96035,approx:1,hours:'每月第1/3周 周四、五 9:00–18:00',price:'—',intro:'清迈大学农学院内，导航 Aggie Hut',tips:'⚠️ 行程内只有 11/5（四）、11/6（五）上午能去，错过等下个月。',note:XHS+'6a9947f9000000002b01e0bb',photo:'https://cdn.chiangmainews.co.th/wp-content/uploads/2025/10/05090902/1759630139_354721-chiangmainews.webp',onlyDates:['2026-11-05','2026-11-06']},
+{id:'fit',tier:1,tierWhy:'你专门让我查过预约的泰拳体验',name:'FIT Boxing Gym',cat:'exp',catName:'体验',lat:18.7939,lng:98.96972,addr:'Soi Jampee（宁曼附近）',hours:'需预约',price:'约300–500铢（60–100元）',intro:'泰拳体验',tips:'电话 +66 93 554 2293 或 FB "Chiangmai Boxing Gym" 私信预约，也可 walk-in；建议提前 1–2 天确认课表。',note:XHS+'6a24f793000000003502a343',photo:'https://a0.muscache.com/im/pictures/Mt/MtTemplate-6975492/original/04bde8ac-9528-4311-ad79-5190d0c7f7b0.jpeg?im_w=720'},
+{id:'wafaham',tier:3,tierWhy:'划船看火烧云，看天气和时间安排',name:'Wat Fa Ham',cat:'exp',catName:'体验',lat:18.80431,lng:99.0056,hours:'20:00前结束',price:'游船40铢≈8元 / 皮划艇50铢≈10元（不限时）',intro:'划船看火烧云',tips:'城区骑摩托约 15 分钟，傍晚去看火烧云。',note:XHS+'6953d91b000000001e02b1ea',photo:'https://img3.digsty.com/Y7quLvcX-UlITFNdAgTD5q9YCS1q1w9J0PQVas388Hg/rs:fill:1500:1500:1/g:fp:0.5:0.5/czM6Ly9hcm91bmR1cy80OS8xODI5MTcyNDctZDliZjAwMDAuanBn.jpg',closeAt:'20:00'},
+{id:'changthong',tier:3,tierWhy:'发光古树森林，顺路可去',name:'Changthong Heritage Park',cat:'exp',catName:'体验',lat:18.86214,lng:98.9918,addr:'Mae Rim',hours:'9:00–19:00',price:'—',intro:'发光古树森林',tips:'建议日落前后去，光影最好。',note:XHS+'69b7fcb0000000001a02102e',photo:'https://image.kkday.com/v2/image/get/c_fit%2Ch_1080%2Cq_55%2Ct_webp%2Cw_1920/s1.kkday.com/product_scm_27871/20260805091146_QiaPQ/jpg'},
+{id:'pongyang',tier:1,tierWhy:'远郊Day1核心，和丛林飞跃、蒙占山同一天',name:'森林过山车',cat:'exp',catName:'体验',lat:18.91686,lng:98.82147,addr:'Pongyang, Mae Rim',hours:'白天',price:'—',intro:'Pongyang 丛林过山车，旁有瀑布咖啡、丛林飞跃',tips:'可跟丛林飞跃拼同一天（都在 Mae Rim）。',note:XHS+'669001ac0000000003025ae7',photo:'https://cdn.travelersuniverse.com/media/chiang-mai-pongyang-jungle-coaster-zipline-with-transfer-t535813-3.jpg'},
+{id:'lanna',tier:1,tierWhy:'你点名要去的；11/7上午已排进行程',name:'Lanna Artisans Art Gallery',cat:'exp',catName:'体验',lat:18.7807,lng:98.9762,approx:1,addr:'Wua Lai 路银庙旁',hours:'9:00–17:00',price:'50铢≈10元/个（现金）',intro:'打铁体验',tips:'免预约，早点去；建议 11/7（六）上午去，下午逛古城、晚上直接去周六夜市。',note:'',photo:'https://isilver-hotel.chiangmaihotel24.com/data/Photos/700x500w/7570/757058/757058962.JPEG'},
+{id:'cosmetics',tier:3,tierWhy:'美妆小样，顺路逛',name:'Chiang Mai Cosmetics',cat:'shop',catName:'购物',lat:18.7885,lng:98.98198,approx:1,addr:'帕辛寺门口一带',hours:'白天',price:'—',intro:'美妆小样',tips:'开很久的美妆杂货店，比711便宜很多（护发精油59铢，711卖79铢）；满约1000铢可退税，找收银员拿退税单；可用支付宝；有店休日非每天营业。',note:XHS+'66fec23d000000002a030960',photo:'https://www.spu.ac.th/spunews/wp-content/uploads/2025/09/A7EDDC8D-9CE5-4BF3-A429-B654160CE253.jpeg'},
+{id:'piemsuk',tier:2,tierWhy:'评论区票选第一的椰子蛋糕',name:'Cake Baan Piemsuk',cat:'dessert',catName:'甜品',lat:18.79269,lng:99.00184,addr:'165/167 Charoen Rat Rd',hours:'9:30–18:30',price:'—',intro:'排名第一的椰子蛋糕（有人说易腻），芒果椰子冰淇淋必吃',tips:'太晚去可能卖完；另有2号分店。',note:XHS+'6a7291b80000000032032325'},
+{id:'malee',tier:3,tierWhy:'椰子蛋糕备选，顺路可去',name:'Malee Bakery & Ice Cream',cat:'dessert',catName:'甜品',lat:18.78334,lng:99.00307,approx:1,addr:'Charoen Prathet Rd（1号店）',hours:'9:00–18:00',price:'—',intro:'椰子蛋糕，听说清爽不油腻',tips:'有2家分店，2号店在 Wat Pa Daet 附近。',note:XHS+'6a7291b80000000032032325'},
+{id:'baanbakery',tier:3,tierWhy:'苹果丹麦，顺路可去（先确认营业状态）',name:'Baan Bakery',cat:'dessert',catName:'甜品',lat:18.77964,lng:98.98975,approx:1,addr:'20 Rat Chiang Saen Rd 1',hours:'8:00–16:00（周一闭店）',price:'—',intro:'苹果丹麦',tips:'有来源显示暂停营业，去之前先确认。',note:XHS+'6a7291b80000000032032325'},
+{id:'khagee',tier:3,tierWhy:'可露丽+胡萝卜蛋糕，顺路可去',name:'khagee',cat:'dessert',catName:'甜品',lat:18.78623,lng:99.00530,addr:'29/30 Chiang Mai-Lamphun Soi 1',hours:'10:00–17:00',price:'胡萝卜蛋糕95铢≈19元 / 可露丽75铢≈15元',intro:'日式小店，杯状胡萝卜蛋糕、可露丽（混朗姆酒）',tips:'胡萝卜蛋糕建议提前电话预订；部分来源称周一二闭店。',note:XHS+'6a7291b80000000032032325'},
+{id:'hotel1',name:'Wachira@Rachamankha（住宿①）',cat:'hotel',catName:'住宿',lat:18.78585,lng:98.98543,addr:'106 Rachamankha Rd',hours:'',price:'到店付3600铢',intro:'11/4–11/8 古城住宿',tips:'订单号 11574；14:00 入住 / 12:00 退房；11/4 早上到可先寄存行李。',note:'',photo:'https://images.sembo.travel/ImageService/ImageHandler.ashx?service=url&nameOfImage=https%3A%2F%2Fi.travelapi.com%2Flodging%2F2000000%2F1100000%2F1099700%2F1099622%2F65a87af7_z.jpg&resizeMode=FitInside&semboApp=true'},
+{id:'hotel2',name:'宁曼住宿②',cat:'hotel',catName:'住宿',lat:18.7992,lng:98.96918,approx:1,addr:'29 Nimmanahaemin Soi 3',hours:'',price:'—',intro:'11/8–11/11 宁曼住宿',tips:'11/8 从古城搬过来。',note:'',photo:'https://www.ultimatechinaguide.com/media/uploads/2022/07/02/nimman.jpeg'},
+/* --- 评论区挖宝新增（4篇分享笔记评论区，2026-09-29） --- */
+{id:'sosood',tier:1,tierWhy:'3篇笔记+4条评论交叉证实',name:'So Sood 面条',cat:'eat',catName:'吃',lat:18.78588,lng:98.98246,addr:'Rachamankha Rd（古城）',hours:'',price:'小红书¥19/人；网友说人均40-50元',intro:'三文鱼新鲜，多条评论交叉证实好吃',tips:'作者跟评：面条要点对，别吃错了。',note:XHS+'6a914cfb000000000303dfa5',photo:PH},
+{id:'wichienbury',tier:1,tierWhy:'多人实测2-3刷',name:'Roast Chicken Wichienbury 宁曼11巷烤鸡',cat:'eat',catName:'吃',lat:18.79689,lng:98.96857,approx:1,addr:'宁曼11巷一带（位置约略）',hours:'',price:'—',intro:'烤鸡翅+辣青木瓜沙拉，多人2-3刷验证',tips:'13赞最高赞推荐；"离开那天没吃到成遗憾"。',note:XHS+'69cb71d60000000022027dc3',photo:PH},
+{id:'houmendapao',tier:2,tierWhy:'66赞全场最高，但周一店休',name:'清迈大学后门打抛饭',cat:'eat',catName:'吃',lat:18.7955,lng:98.9535,approx:1,addr:'清迈大学后门一带（位置约略）',hours:'',price:'—',intro:'蛋黄拌饭+腊肠，66赞全场最高',tips:'⚠️ 周一店休！11/9（周一）别去。',note:XHS+'6a85abda000000003300feb1',photo:PH},
+{id:'hainanji',tier:2,tierWhy:'14赞最高，连吃两天',name:'海南鸡饭 ข้าวมันไก่ ป.7',cat:'eat',catName:'吃',lat:18.82709,lng:98.99986,addr:'San Sai 一带（地图查询，未经核实）',hours:'',price:'—',intro:'14赞最高，"连着吃了两天"',tips:'离古城约4-5公里，骑摩托可去。',note:XHS+'69cb71d60000000022027dc3',photo:PH},
+{id:'mrkai',tier:3,tierWhy:'便宜，古城顺路',name:'Mr.KAI Restaurant',cat:'eat',catName:'吃',lat:18.79337,lng:98.98826,approx:1,addr:'古城 Phra Pokklao Soi 13一带（位置约略）',hours:'',price:'80多铢≈16元/顿',intro:'好吃便宜',tips:'网友实测一顿80多铢。',note:XHS+'6a90246700000000290373e8',photo:PH},
+{id:'fernforest',tier:3,tierWhy:'好吃但品控不稳，顺路',name:'Fern Forest Cafe',cat:'dessert',catName:'甜品',lat:18.78963,lng:98.98259,addr:'4 Singharat Rd（古城）',hours:'',price:'—',intro:'网红椰子派+橘子味甜品',tips:'品控不稳定，实物可能比照片塌。',note:XHS+'6a85abda000000003300feb1',photo:PH},
+];
+const EXTRAS=[
+{name:'Racha Moo Tod - Leng Saap（火山排骨）',desc:'清迈大学后门小吃街 · 排骨软烂入味，炸鸡翅/炸蒜五花肉也好吃',note:XHS+'6991d7cb000000001d026aa1'},
+{name:'711 对面烧烤摊',desc:'blooming moon 旅店附近 711 对面 · 6693赞，老板人好、摊位干净',note:XHS+'6a98381e00000000270146cc'},
+{name:'Frog Eye／田鸡眼烤排骨',desc:'Google地图搜 "Frog Eye" · 秘制调料焦香甜咸口',note:XHS+'6aad19de0000000025037bbd'},
+{name:'炸软壳蟹大排档',desc:'店名未知·晚上营业·人均约50元 · "清迈最好吃的软壳蟹"',note:XHS+'6a0221ad000000003802372b'},
+{name:'On The Rock',desc:'古城西南 · 烤肉+瓦罐火锅 · 两人不到120元 · 17:00到看日落，景观位需预约',note:XHS+'6991dd4f000000000b012aa3'},
+{name:'手绘冰箱贴爷爷摊',desc:'仅周六夜市出摊 · 约30铢≈6元/个可刻字',note:XHS+'6aaa99c0000000002601d9f2'},
+{name:'宁曼鸡腿大叔摊 / 宁曼 spa',desc:'yellow后面空地 · 出摊不稳定、19点左右可能卖完 · 很juicy，还卖木瓜沙拉',note:XHS+'69789f340000000021029e12'},
+{name:'DQ 冰淇淋三明治',desc:'30铢≈6元 · 泰国通用',note:XHS+'6aa967a2000000002b011286'},
+{name:'Lotus\'s Night Market 莲花夜市',desc:'仅周三–五晚上（11/4、11/5、11/6）· Chang Phueak 一带',note:XHS+'69f40ce5000000001a03419b'},
+{name:'蒙占山绣球花海',desc:'11月花季 · 150铢≈30元，皮卡接送 · 另有绵羊牧场',note:XHS+'6924783c000000001b0303a2'},
+{name:'泰囧村 = 湄康蓬村',desc:'清迈东边山间小村 · 包车一日游：瀑布+观景台咖啡+老街',note:''},
+{name:'三甘烹温泉',desc:'市区东32公里 · 市区小巴直达60铢起≈12元',note:''},
+];
+const PLAN=[
+{date:'11/4',wd:'三',title:'抵达清迈',tag:'',items:[
+{t:'08:15',x:'落地清迈',d:'春秋 9C8933'},
+{t:'上午',x:'Wachira 寄存行李',d:'14:00 才能入住，先寄存去市区逛'},
+{t:'下午',x:'市区收藏店',d:'行程待排，先逛古城周边'},
+{t:'晚上',x:"Lotus's 莲花夜市",d:'仅 11/4–11/6 有，今晚先去一次'}]},
+{date:'11/5',wd:'四',title:'Gong Kong Market 日',tag:'',items:[
+{t:'上午',x:'Gong Kong Market',d:'⚠️ 每月只开 11/5、11/6，农学院内、导航 Aggie Hut'},
+{t:'下午',x:'市区收藏店',d:'行程待排'},
+{t:'晚上',x:"Lotus's 莲花夜市",d:''}]},
+{date:'11/6',wd:'五',title:'Gong Kong 最后机会',tag:'',items:[
+{t:'上午',x:'Gong Kong Market',d:'最后机会'},
+{t:'下午',x:'市区收藏店',d:'行程待排'},
+{t:'晚上',x:"Lotus's 莲花夜市",d:'最后机会'}]},
+{date:'11/7',wd:'六',title:'打铁 + 周六夜市',tag:'',items:[
+{t:'上午',x:'Lanna Artisans 打铁',d:'9:00–17:00，50铢/个现金，早点去'},
+{t:'下午',x:'古城逛吃',d:'Wua Lai 路一带'},
+{t:'晚上',x:'周六夜市（Wua Lai 路）',d:'找手绘冰箱贴爷爷摊（只周六出摊）'}]},
+{date:'11/8',wd:'日',title:'换酒店 + 周日步行街',tag:'换酒店',items:[
+{t:'中午',x:'退房 → 搬到宁曼',d:'29 Nimmanahaemin Soi 3'},
+{t:'下午',x:'宁曼区逛吃',d:'Toffee Roasters、鸡腿大叔摊都在这一带'},
+{t:'晚上',x:'周日步行街（塔佩门）',d:'仅周日有'}]},
+{date:'11/9',wd:'一',title:'远郊 Day A · Mae Rim',tag:'待定',todo:1,items:[
+{t:'07:30',x:'包车出发',d:'约2000–3000铢/天（400–600元）'},
+{t:'09:00',x:'丛林飞跃（早场）',d:'人少；跟拍200–400铢现金，玩完 AirDrop 要照片'},
+{t:'11:00',x:'森林过山车 + 午饭',d:'Pongyang 一带'},
+{t:'13:30',x:'蒙占山绣球花海',d:'150铢≈30元，皮卡接送；另有绵羊牧场'},
+{t:'16:00',x:'山顶看日落',d:''},
+{t:'约19:00',x:'回市区',d:''}]},
+{date:'11/10',wd:'二',title:'远郊 Day B · 水中森林',tag:'待定',todo:1,items:[
+{t:'清晨',x:'水中森林（赶日出船）',d:'船费700铢≈140元 + 门票100铢≈20元，需电话预约船'},
+{t:'中午',x:'回市区',d:'下午市区自由活动（待排）'}]},
+{date:'11/11',wd:'三',title:'回程',tag:'',items:[
+{t:'白天',x:'市区最后逛吃',d:'行程待排'},
+{t:'21:40',x:'飞回广州',d:'春秋 9C8934，11/12 02:00 到'}]},
+];
+/* ===== 逻辑 ===== */
+const $=s=>document.querySelector(s);
+const CATCOLOR={eat:'#e05252',dessert:'#e08bb0',market:'#f5a623',exp:'#1e9e6a',shop:'#9b59b6',hotel:'#34495e'};
+let memStore={};
+const safeLS={
+ getItem(k){try{return localStorage.getItem(k);}catch(e){return memStore[k]||null;}},
+ setItem(k,v){try{localStorage.setItem(k,v);}catch(e){memStore[k]=v;}}
+};
+let checked=new Set(JSON.parse(safeLS.getItem('cm_trip_checkins_v1')||'[]'));
+function saveChecked(){safeLS.setItem('cm_trip_checkins_v1',JSON.stringify([...checked]));}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function openStatus(s){
+  if(s.onlyDates){const t=todayStr();const ok=s.onlyDates.includes(t);
+    return ok?{c:'open',t:'今日开放'}:{c:'unknown',t:'仅 '+s.onlyDates.map(d=>d.slice(5)).join('、')+' 开放'};}
+  if(s.closeAt){const n=new Date();const mins=n.getHours()*60+n.getMinutes();const[ h,m]=s.closeAt.split(':').map(Number);
+    return mins<h*60+m?{c:'open',t:'营业中（'+s.closeAt+'前结束）'}:{c:'closed',t:'已打烊'};}
+  const m=(s.hours||'').match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
+  if(m){const n=new Date();const mins=n.getHours()*60+n.getMinutes();
+    const a=+m[1]*60+ +m[2],b=+m[3]*60+ +m[4];
+    const open=b>a?(mins>=a&&mins<b):(mins>=a||mins<b);
+    return open?{c:'open',t:'营业中'}:{c:'closed',t:'已打烊'};}
+  return{c:'unknown',t:s.hours||'时间未知'};
+}
+function updateProgress(){
+  const n=checked.size,total=SHOPS.length;
+  $('#progress i').style.width=(n/total*100)+'%';
+  $('#progress-txt').textContent='打卡 '+n+'/'+total+(n===total?' 🎉 全打卡！':'');
+}
+function toggleCheck(id){
+  checked.has(id)?checked.delete(id):checked.add(id);
+  saveChecked();updateProgress();refreshCheckUI();updatePins();
+}
+/* --- 想去清单（非必去，顺路提醒） --- */
+const WISH=[
+{id:'w-fridge',name:'冰箱贴爷爷摊',tag:'11/7 周六夜市顺路',desc:'周六夜市 Wua Lai 路 Pond Silver Town 一带，仅周六出摊，约30铢/个可刻字（位置为网友分享，未经核实）'},
+{id:'w-lengsaap',name:'清迈大学后门酸辣排骨汤 Racha Moo Tod（一店）',tag:'宁曼/清迈大学顺路',desc:'火山排骨软烂入味，炸鸡翅、炸蒜五花肉也好吃'},
+{id:'w-frogeye',name:'Frog Eye 田鸡眼烤排骨',tag:'吃 · 顺路可去',desc:'秘制调料焦香甜咸口，网友说"吃完打包带回国"'},
+{id:'w-bbq711',name:'711 对面烧烤摊',tag:'夜宵 · blooming moon 旅店附近',desc:'收藏夹点赞最高（6693赞），老板人好、店面干净'},
+{id:'w-crab',name:'炸软壳蟹大排档',tag:'吃 · 晚上营业',desc:'店名未知，人均约50元，晚上营业；作者称"清迈最好吃的软壳蟹"'},
+{id:'w-ontherock',name:'On The Rock 烤肉+瓦罐火锅',tag:'晚餐备选 · 古城西南',desc:'猪肉套餐+3杯饮料两人不到120元；17:00到、18:30前日落最美；景观位需预约，19:00后不能walk-in'},
+{id:'w-chickenleg',name:'宁曼烤鸡腿大叔',tag:'宁曼路 · 晚上',desc:'在yellow后面空地，出摊不稳定、19点左右可能卖完；很juicy，还卖木瓜沙拉（位置为网友分享，未经核实）'},
+{id:'w-cook',name:'厨房课（二选一，待定）',tag:'待定',desc:'Zabb E Lee（稻田农场，约240元/人）/ Raniy（约200元/人现金，周六不营业）/ 奶奶厨房（约185元起，有中文老师）'},
+{id:'w-chamcha',name:'Chamcha Market 雨树手工市集',tag:'市集 · 顺路可逛',desc:'大树下的手工市集；另有 Kadmanee Market（周末市集）'},
+{id:'w-pandan',name:'711 斑斓椰子卷',tag:'任意711顺路买',desc:'7-11就能买到的斑斓椰子卷小零食'},
+{id:'w-bigbag',name:'711 Big Bag 洋葱圈',tag:'任意711顺路买',desc:'7-11的 Big Bag 洋葱圈零食'},
+{id:'w-dq',name:'DQ 冰淇淋三明治',tag:'DQ门店顺路买',desc:'30铢≈6元，泰国DQ限定'},
+/* --- 评论区挖宝新增（4篇分享笔记评论区，2026-09-29；无精确定位，只放清单） --- */
+{id:'w-sogrill',name:'sogrill 泰北小火锅',tag:'🥈 · 吃',desc:'14赞全场最高，"后悔没第一天去"；3人400多铢≈80多元；分店环境更好更凉快；认准sogrill，泰北小火锅另有争议店（位置为网友分享，去前查一下）'},
+{id:'w-relax',name:'Relax 马杀鸡',tag:'🥈 · 按摩',desc:'比别家贵50铢≈10元，力度大（高强度慎选），送木橘茶+炒米块；足底和泰式都不错（具体分店去前查一下）'},
+{id:'w-littlehotpot',name:'little hot pot 瓦罐火锅',tag:'🥈 · 吃',desc:'12赞，"巨巨好吃，尤其是边上那个生腌虾"（位置为网友分享，去前查一下）'},
+{id:'w-khaotom',name:'ข้าวต้มนายดำ 2',tag:'🥈 · 吃',desc:'小红书4.8分，人均40-50元，多条评论强推（分店多，去前查一下"2店"位置）'},
+{id:'w-houmen',name:'清迈大学后门小吃街',tag:'🥉 · 后门顺路',desc:'酸辣排骨汤（酸爽便宜）+ 炸鸡摊爷爷奶奶（炸鸡腿"一次买了20个"）+ 食堂二楼牛油果冰沙'},
+{id:'w-tapaedapao',name:'塔佩门旁边打抛饭',tag:'🥉 · 塔佩门顺路',desc:'"在清迈吃的数一数二的打抛饭"（具体店名不明，塔佩门附近找找）'},
+{id:'w-painter',name:'找画师画画',tag:'🥉 · 体验',desc:'100铢≈20元/人，很有纪念意义（位置为网友分享，未经核实）'}
+];
+let wishDone=new Set(JSON.parse(safeLS.getItem('cm_trip_wish_v1')||'[]'));
+function saveWish(){safeLS.setItem('cm_trip_wish_v1',JSON.stringify([...wishDone]));}
+function wishCustom(){try{return JSON.parse(safeLS.getItem('cm_trip_wish_custom_v1')||'[]');}catch(e){return[];}}
+function saveCustom(l){safeLS.setItem('cm_trip_wish_custom_v1',JSON.stringify(l));}
+function renderWish(){
+  const all=WISH.concat(wishCustom());
+  $('#wish-list').innerHTML=all.map(w=>{
+    const done=wishDone.has(w.id);
+    return `<div class="wishitem${done?' done':''}"><div class="info"><b>${w.name}</b><div class="desc">${w.desc||''}</div>${w.tag?`<span class="tag">${w.tag}</span>`:''}</div><button class="checkbtn${done?' done':''}" onclick="toggleWish('${w.id}')">${done?'✅ 已去':'打卡'}</button></div>`;
+  }).join('');
+}
+function toggleWish(id){wishDone.has(id)?wishDone.delete(id):wishDone.add(id);saveWish();renderWish();}
+$('#wish-add').onclick=()=>{
+  const name=prompt('想去哪里？（店名/体验）');
+  if(!name||!name.trim())return;
+  const desc=prompt('备注一句（比如：顺路去买 / 网友推荐，可不填）')||'';
+  const l=wishCustom();l.push({id:'wc'+Date.now(),name:name.trim(),desc:desc.trim(),tag:'自己加的'});
+  saveCustom(l);renderWish();
+};
+/* --- 行程 --- */
+function renderPlan(){
+  $('#plan-list').innerHTML=PLAN.map(d=>`
+  <div class="day"><div class="day-head"><span class="date">${d.date}</span><span class="wd">周${d.wd} · ${d.title}</span>${d.tag?`<span class="tag${d.todo?' todo':''}">${d.tag}</span>`:''}</div>
+  ${d.items.map(e=>`<div class="ev"><span class="t">${e.t}</span><span class="x"><b>${e.x}</b>${e.d?`<span>${e.d}</span>`:''}</span></div>`).join('')}
+  </div>`).join('');
+}
+/* --- Tab 切换 --- */
+let mapInit=false;
+document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabbar button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  $('#tab-'+b.dataset.t).classList.add('active');
+  if(b.dataset.t==='map'&&!mapInit){initMap();mapInit=true;}
+  if(b.dataset.t==='map'&&mapInit){setTimeout(()=>map.invalidateSize(),50);}
+});
+/* --- 地图 --- */
+let map,markers={};
+function pinIcon(s){
+  const done=checked.has(s.id);
+  const col=done?'#1e9e6a':CATCOLOR[s.cat];
+  return L.divIcon({className:'',html:`<div style="width:26px;height:26px;border-radius:50%;background:${col};border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700">${done?'✓':''}</div>`,iconSize:[26,26],iconAnchor:[13,13]});
+}
+function initMap(){
+  map=L.map('map').setView([18.795,98.985],12);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
+  SHOPS.forEach(s=>{
+    const mk=L.marker([s.lat,s.lng],{icon:pinIcon(s)}).addTo(map);
+    mk.bindPopup(`<b>${s.name}</b><br><span style="font-size:12px;color:#666">${s.intro||''}</span><br><a href="javascript:openShop('${s.id}')" style="color:#d9622b">看详情 →</a>`);
+    markers[s.id]=mk;
+  });
+  $('#loc-btn').onclick=()=>{map.locate({setView:true,maxZoom:15});};
+  map.on('locationfound',e=>{L.marker(e.latlng).addTo(map).bindPopup('📍 你在这里').openPopup();});
+  map.on('locationerror',()=>alert('定位失败，请检查浏览器定位权限'));
+  $('#fit-btn').onclick=()=>{map.fitBounds(L.latLngBounds(SHOPS.map(s=>[s.lat,s.lng])).pad(0.15));};
+}
+function updatePins(){Object.entries(markers).forEach(([id,mk])=>{const s=SHOPS.find(x=>x.id===id);mk.setIcon(pinIcon(s));});}
+window.openShop=openShop;
+/* --- 店铺详情 --- */
+let curShop=null;
+function openShop(id){
+  const s=SHOPS.find(x=>x.id===id);curShop=s;
+  const st=openStatus(s);
+  const ph=s.photo&&s.photo!==PH?s.photo:'';
+  $('#m-photo').src=ph;$('#m-photo').style.display=ph?'':'none';
+  $('#m-photo').onerror=function(){this.onerror=null;this.src=placeholder(s.name);};
+  $('#m-name').textContent=s.name;
+  $('#m-addr').textContent=(s.addr||'')+(s.approx?'（位置约略）':'');
+  $('#m-status').innerHTML=`<span class="pill ${st.c}">${st.t}</span> <span class="cat">${s.catName}</span> ${tierBadge(s)}`;
+  $('#m-kv').innerHTML=`
+    ${effTier(s)?`<div class="kv"><span class="k">级别</span><span><b>${TIERS[effTier(s)][0]}</b>${s.tierWhy?'：'+s.tierWhy:''}${tierOv[s.id]?' <span style="color:#2b5fc7;font-size:11px">（我调整的）</span>':''}</span></div>`:''}
+    <div class="kv"><span class="k">调整</span><span id="m-tierbtns"></span></div>
+    ${s.intro?`<div class="kv"><span class="k">简介</span><span>${s.intro}</span></div>`:''}
+    ${s.hours?`<div class="kv"><span class="k">营业时间</span><span>${s.hours}</span></div>`:''}
+    ${s.price&&s.price!=='—'?`<div class="kv"><span class="k">价格</span><span>${s.price}</span></div>`:''}`;
+  const tb=$('#m-tierbtns');
+  if(tb){tb.innerHTML=[1,2,3].map(t=>`<span class="chip${effTier(s)===t?' on':''}" data-t="${t}">${TIERS[t][0]}</span>`).join(' ')+(tierOv[s.id]?' <span class="chip" id="m-tierreset">恢复默认</span>':'');
+    tb.querySelectorAll('.chip[data-t]').forEach(ch=>ch.onclick=()=>setTier(s.id,+ch.dataset.t));
+    const rs=$('#m-tierreset');if(rs)rs.onclick=()=>setTier(s.id,0);}
+  $('#m-tips').style.display=s.tips?'':'none';$('#m-tips').textContent=s.tips||'';
+  $('#m-note').style.display=s.note?'':'none';$('#m-note').href=s.note;
+  $('#m-gmap').href=`https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lng}`;
+  $('#m-nav').href=`https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}`;
+  const cb=$('#m-check');cb.textContent=checked.has(s.id)?'✅ 已打卡（点我取消）':'⬜ 标记为已打卡';
+  cb.className='linkbtn'+(checked.has(s.id)?' dark':'');cb.style.border='1px solid var(--accent)';cb.style.background=checked.has(s.id)?'var(--green)':'#fff';cb.style.color=checked.has(s.id)?'#fff':'var(--accent)';
+  cb.onclick=()=>{toggleCheck(s.id);openShop(s.id);};
+  $('#modal').classList.add('show');
+}
+$('#modal-close').onclick=()=>$('#modal').classList.remove('show');
+$('#modal .mask').onclick=()=>$('#modal').classList.remove('show');
+function placeholder(name){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200"><rect width="400" height="200" fill="#f3ede0"/><text x="200" y="105" font-size="20" text-anchor="middle" fill="#a07c3f">${name.slice(0,12)}</text></svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+/* --- 店铺列表 --- */
+let curCat='全部',curQ='',curTier=0;
+const TIERS={1:['🥇 必去','t1'],2:['🥈 值得去','t2'],3:['🥉 顺路去','t3']};
+let tierOv={};try{tierOv=JSON.parse(safeLS.getItem('cm_trip_tierov_v1')||'{}');}catch(e){tierOv={};}
+function effTier(s){return tierOv[s.id]||s.tier||0;}
+function setTier(id,t){if(t)tierOv[id]=t;else delete tierOv[id];safeLS.setItem('cm_trip_tierov_v1',JSON.stringify(tierOv));updatePins();renderShops();if(typeof renderNear==='function')renderNear();openShop(id);}
+function tierBadge(s){const t=effTier(s);return t?`<span class="tier ${TIERS[t][1]}" title="${tierOv[s.id]?'你自己调整过的级别':''}">${TIERS[t][0]}${tierOv[s.id]?' ✎':''}</span>`:'';}
+function renderShops(){
+  const cats=['全部','吃','甜品','市场','体验','购物','住宿'];
+  $('#chips').innerHTML=cats.map(c=>`<span class="chip${c===curCat?' on':''}" data-c="${c}">${c}</span>`).join('');
+  document.querySelectorAll('#chips .chip').forEach(ch=>ch.onclick=()=>{curCat=ch.dataset.c;renderShops();});
+  const tierNames=['全部','🥇 必去','🥈 值得去','🥉 顺路去'];
+  $('#chips-tier').innerHTML=tierNames.map((t,i)=>`<span class="chip${i===curTier?' on':''}" data-t="${i}">${t}</span>`).join('');
+  document.querySelectorAll('#chips-tier .chip').forEach(ch=>ch.onclick=()=>{curTier=+ch.dataset.t;renderShops();});
+  const list=SHOPS.filter(s=>(curCat==='全部'||s.catName===curCat)&&(curTier===0||effTier(s)===curTier)&&(s.name+s.intro).toLowerCase().includes(curQ.toLowerCase()));
+  $('#shop-list').innerHTML=list.length?list.map(s=>{
+    const st=openStatus(s);const done=checked.has(s.id);
+    const ph=s.photo&&s.photo!==PH?s.photo:placeholder(s.name);
+    return `<div class="shopitem" onclick="openShop('${s.id}')">
+    <img src="${ph}" onerror="this.onerror=null;this.src=placeholder('${s.name.replace(/'/g,'')}')" alt="">
+    <div class="info"><b>${s.name}</b><div class="desc">${s.intro||''}</div>
+    <div class="meta"><span class="cat">${s.catName}</span>${tierBadge(s)}<span class="pill ${st.c}">${st.t}</span>
+    <button class="checkbtn${done?' done':''}" onclick="event.stopPropagation();toggleCheck('${s.id}')">${done?'✅ 已打卡':'打卡'}</button></div></div></div>`;
+  }).join(''):'<div class="empty">没找到，换个关键词试试</div>';
+  $('#extra-list').innerHTML=EXTRAS.map(e=>`<div class="row"><span><b>${e.name}</b><br><span class="k" style="font-size:12px">${e.desc}</span></span>${e.note?`<a href="${e.note}" target="_blank" style="color:var(--accent);font-size:12px;white-space:nowrap">笔记 →</a>`:''}</div>`).join('');
+}
+function refreshCheckUI(){renderShops();const nl=$('#near-list');if(nl.dataset.done)renderNear(true);}
+$('#q').oninput=e=>{curQ=e.target.value;renderShops();};
+/* --- 附近 --- */
+function hav(a,b,c,d){const R=6371,r=x=>x*Math.PI/180;const h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(h));}
+function renderNear(keep){
+  const list=[...SHOPS].filter(s=>s.cat!=='hotel').sort((a,b)=>a._d-b._d);
+  $('#near-list').dataset.done='1';
+  $('#near-list').innerHTML=list.map(s=>{
+    const st=openStatus(s);const done=checked.has(s.id);
+    const ph=s.photo&&s.photo!==PH?s.photo:placeholder(s.name);
+    return `<div class="shopitem" onclick="openShop('${s.id}')">
+    <img src="${ph}" onerror="this.onerror=null;this.src=placeholder('${s.name.replace(/'/g,'')}')" alt="">
+    <div class="info"><b>${s.name}</b><div class="desc">${s.intro||''}</div>
+    <div class="meta"><span class="dist">📍 ${s._d<1?(s._d*1000).toFixed(0)+'m':s._d.toFixed(1)+'km'}</span>${tierBadge(s)}<span class="pill ${st.c}">${st.t}</span>
+    <button class="checkbtn${done?' done':''}" onclick="event.stopPropagation();toggleCheck('${s.id}')">${done?'✅ 已打卡':'打卡'}</button></div></div></div>`;
+  }).join('');
+  if(!keep)$('#near-tip').textContent='已按距离从近到远排好，住宿除外。';
+}
+$('#near-btn').onclick=()=>{
+  $('#near-tip').textContent='定位中…';
+  navigator.geolocation.getCurrentPosition(p=>{
+    const{latitude:la,longitude:lo}=p.coords;
+    SHOPS.forEach(s=>s._d=hav(la,lo,s.lat,s.lng));
+    renderNear();
+  },()=>{$('#near-tip').textContent='定位失败：请允许浏览器获取位置，或用地图 Tab 的"我的位置"。';},{timeout:10000});
+};
+/* --- 换算 --- */
+const RATE=0.2;
+$('#thb').oninput=e=>{const v=parseFloat(e.target.value);$('#cny').value=v>=0?(v*RATE).toFixed(v<10?1:0):'';convTxt(v,'thb');};
+$('#cny').oninput=e=>{const v=parseFloat(e.target.value);$('#thb').value=v>=0?(v/RATE).toFixed(0):'';convTxt(v,'cny');};
+function convTxt(v,from){$('#convres').innerHTML=!(v>=0)?'':from==='thb'?`<b>${v}</b> 泰铢 ≈ <b>${(v*RATE).toFixed(1)}</b> 元`:`<b>${v}</b> 元 ≈ <b>${(v/RATE).toFixed(0)}</b> 泰铢`;}
+/* --- init --- */
+renderPlan();renderShops();renderWish();updateProgress();
+</script>
+</body>
+</html>
