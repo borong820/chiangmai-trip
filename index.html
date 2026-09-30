@@ -71,7 +71,7 @@ main{padding:12px 12px 0}
 .wishitem.done{opacity:.55}
 .wishitem.done b{text-decoration:line-through}
 .checkbtn.done{background:var(--green);border-color:var(--green);color:#fff}
-#map{height:280px;height:calc(100dvh - 380px);min-height:220px;max-height:420px;border-radius:14px;overflow:hidden}
+#map{height:320px;min-height:240px;border-radius:14px;overflow:hidden}
 .mapbar{display:flex;gap:8px;margin-bottom:10px}
 .btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px;font-size:14px;font-weight:600}
 .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
@@ -509,12 +509,27 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>{
   b.classList.add('on');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   $('#tab-'+b.dataset.t).classList.add('active');
+  window.scrollTo(0,0);
   if(b.dataset.t==='plan')renderRemind();
   if(b.dataset.t==='map'&&!mapInit){initMap();mapInit=true;}
-  if(b.dataset.t==='map'&&mapInit){setTimeout(()=>map.invalidateSize(),50);}
+  if(b.dataset.t==='map'&&mapInit){setTimeout(()=>{map.invalidateSize();fitMap();},60);}
 });
 /* --- 地图 --- */
 let map,markers={};
+/* 地图高度刚好填满 tab 栏上方的空间 */
+function fitMap(){
+  try{
+    const tab=$('#tab-map');if(!tab||!tab.classList.contains('active'))return;
+    const mapEl=$('#map'),bar=$('#tabbar');
+    if(!mapEl||!bar)return;
+    const avail=Math.floor(window.innerHeight-mapEl.getBoundingClientRect().top-bar.offsetHeight-12);
+    if(avail>220&&Math.abs(avail-mapEl.offsetHeight)>4){
+      mapEl.style.height=avail+'px';
+      if(map)map.invalidateSize();
+    }
+  }catch(e){}
+}
+window.addEventListener('resize',()=>setTimeout(fitMap,120));
 function pinIcon(s){
   const done=checked.has(s.id);
   const col=done?'#1e9e6a':CATCOLOR[s.cat];
