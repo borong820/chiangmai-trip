@@ -21,6 +21,15 @@ main{padding:12px 12px 0}
 .deadline{background:#fff7e8;border:1px solid #f5d9a8;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px}
 .deadline b{color:var(--accent)}
 .deadline li{margin-left:18px;margin-top:2px}
+.navlink{font-size:12px;color:var(--accent);text-decoration:none;white-space:nowrap;font-weight:400}
+.lim{background:#fff;border:1px dashed #f5d9a8;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:13px}
+.lim b{color:var(--accent)}
+.phrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid var(--line);font-size:14px;cursor:pointer}
+.phrow:first-of-type{border-top:none}
+.phrow:active{background:#faf6ef}
+.phrow .th{font-size:16px;color:var(--ink)}
+.phrow .zh{color:var(--muted);font-size:12px}
+.phrow .py{color:#b09a6a;font-size:11px}
 .day{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .day-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
 .day-head .date{font-size:16px;font-weight:700;color:var(--accent)}
@@ -109,12 +118,7 @@ main{padding:12px 12px 0}
 <main>
 <!-- 行程 -->
 <section class="tab active" id="tab-plan">
-<div class="deadline"><b>⏰ 时间死线（别错过）</b><ul>
-<li><b>11/5、11/6 上午</b>：Gong Kong Market（每月只开这两天）</li>
-<li><b>11/4、11/5、11/6 晚上</b>：Lotus's 莲花夜市（仅周三–五）</li>
-<li><b>11/7 周六</b>：上午打铁 → 晚上周六夜市找冰箱贴爷爷（都在 Wua Lai 路一带）</li>
-<li><b>11/8 周日</b>：晚上周日步行街（塔佩门）</li>
-</ul></div>
+<div id="remind"></div>
 <div id="plan-list"></div>
 </section>
 <!-- 地图 -->
@@ -151,6 +155,13 @@ main{padding:12px 12px 0}
 <div class="card"><h3>💱 泰铢 ↔ 人民币 <span style="font-size:11px;color:var(--muted)">约 5铢 ≈ 1块</span></h3>
 <div class="conv"><input id="thb" inputmode="decimal" placeholder="泰铢 THB"><span class="eq">≈</span><input id="cny" inputmode="decimal" placeholder="人民币 CNY"></div>
 <div class="convres" id="convres"></div></div>
+<div class="card"><h3>🈯 泰语翻译 <span style="font-size:11px;color:var(--muted)">点短语复制泰文</span></h3>
+<div class="chips" id="ph-cat"></div>
+<div id="ph-list"></div>
+<div class="conv" style="margin-top:10px"><input id="tr-in" placeholder="输入中文或泰文…"><button class="btn" id="tr-btn" style="flex:0 0 auto;padding:10px 16px">翻译</button></div>
+<div style="margin-top:8px"><span class="chip on" id="tr-zh-th">中 → 泰</span> <span class="chip" id="tr-th-zh">泰 → 中</span></div>
+<div id="tr-out" style="font-size:14px;margin-top:8px;min-height:20px"></div>
+<div style="font-size:11px;color:var(--muted);margin-top:4px">在线翻译需联网，机器翻译仅供参考</div></div>
 <div class="card"><h3>✈️ 航班（春秋航空·已订）</h3>
 <div class="row"><span class="k">去程 9C8933 · 11/4</span><span>05:55 广州T3 → 08:15 清迈</span></div>
 <div class="row"><span class="k">回程 9C8934 · 11/11</span><span>21:40 清迈 → 02:00+1 广州</span></div></div>
@@ -236,39 +247,39 @@ const EXTRAS=[
 ];
 const PLAN=[
 {date:'11/4',wd:'三',title:'抵达清迈',tag:'',items:[
-{t:'08:15',x:'落地清迈',d:'春秋 9C8933'},
-{t:'上午',x:'Wachira 寄存行李',d:'14:00 才能入住，先寄存去市区逛'},
+{t:'08:15',x:'落地清迈',d:'春秋 9C8933',q:'清迈国际机场'},
+{t:'上午',x:'Wachira 寄存行李',d:'14:00 才能入住，先寄存去市区逛',q:'18.78585,98.98543'},
 {t:'下午',x:'市区收藏店',d:'行程待排，先逛古城周边'},
-{t:'晚上',x:"Lotus's 莲花夜市",d:'仅 11/4–11/6 有，今晚先去一次'}]},
+{t:'晚上',x:"Lotus's 莲花夜市",d:'仅 11/4–11/6 有，今晚先去一次',q:"Lotus's Night Market Chiang Mai"}]},
 {date:'11/5',wd:'四',title:'Gong Kong Market 日',tag:'',items:[
-{t:'上午',x:'Gong Kong Market',d:'⚠️ 每月只开 11/5、11/6，农学院内、导航 Aggie Hut'},
+{t:'上午',x:'Gong Kong Market',d:'⚠️ 每月只开 11/5、11/6，农学院内、导航 Aggie Hut',q:'Gong Kong Market Maejo Chiang Mai'},
 {t:'下午',x:'市区收藏店',d:'行程待排'},
-{t:'晚上',x:"Lotus's 莲花夜市",d:''}]},
+{t:'晚上',x:"Lotus's 莲花夜市",d:'',q:"Lotus's Night Market Chiang Mai"}]},
 {date:'11/6',wd:'五',title:'Gong Kong 最后机会',tag:'',items:[
-{t:'上午',x:'Gong Kong Market',d:'最后机会'},
+{t:'上午',x:'Gong Kong Market',d:'最后机会',q:'Gong Kong Market Maejo Chiang Mai'},
 {t:'下午',x:'市区收藏店',d:'行程待排'},
-{t:'晚上',x:"Lotus's 莲花夜市",d:'最后机会'}]},
+{t:'晚上',x:"Lotus's 莲花夜市",d:'最后机会',q:"Lotus's Night Market Chiang Mai"}]},
 {date:'11/7',wd:'六',title:'打铁 + 周六夜市',tag:'',items:[
-{t:'上午',x:'Lanna Artisans 打铁',d:'9:00–17:00，50铢/个现金，早点去'},
-{t:'下午',x:'古城逛吃',d:'Wua Lai 路一带'},
-{t:'晚上',x:'周六夜市（Wua Lai 路）',d:'找手绘冰箱贴爷爷摊（只周六出摊）'}]},
+{t:'上午',x:'Lanna Artisans 打铁',d:'9:00–17:00，50铢/个现金，早点去',q:'Lanna Artisans Art Gallery'},
+{t:'下午',x:'古城逛吃',d:'Wua Lai 路一带',q:'Wua Lai Road Chiang Mai'},
+{t:'晚上',x:'周六夜市（Wua Lai 路）',d:'找手绘冰箱贴爷爷摊（只周六出摊）',q:'Wua Lai Walking Street Chiang Mai'}]},
 {date:'11/8',wd:'日',title:'换酒店 + 周日步行街',tag:'换酒店',items:[
-{t:'中午',x:'退房 → 搬到宁曼',d:'29 Nimmanahaemin Soi 3'},
+{t:'中午',x:'退房 → 搬到宁曼',d:'29 Nimmanahaemin Soi 3',q:'18.7992,98.96918'},
 {t:'下午',x:'宁曼区逛吃',d:'Toffee Roasters、鸡腿大叔摊都在这一带'},
-{t:'晚上',x:'周日步行街（塔佩门）',d:'仅周日有'}]},
+{t:'晚上',x:'周日步行街（塔佩门）',d:'仅周日有',q:'Sunday Walking Street Tha Phae Gate'}]},
 {date:'11/9',wd:'一',title:'远郊 Day A · Mae Rim',tag:'待定',todo:1,items:[
 {t:'07:30',x:'包车出发',d:'约2000–3000铢/天（400–600元）'},
-{t:'09:00',x:'丛林飞跃（早场）',d:'人少；跟拍200–400铢现金，玩完 AirDrop 要照片'},
-{t:'11:00',x:'森林过山车 + 午饭',d:'Pongyang 一带'},
-{t:'13:30',x:'蒙占山绣球花海',d:'150铢≈30元，皮卡接送；另有绵羊牧场'},
+{t:'09:00',x:'丛林飞跃（早场）',d:'人少；跟拍200–400铢现金，玩完 AirDrop 要照片',q:'Zipline Chiang Mai Mae Rim'},
+{t:'11:00',x:'森林过山车 + 午饭',d:'Pongyang 一带',q:'Pongyang Jungle Coaster'},
+{t:'13:30',x:'蒙占山绣球花海',d:'150铢≈30元，皮卡接送；另有绵羊牧场',q:'Mon Cham Chiang Mai'},
 {t:'16:00',x:'山顶看日落',d:''},
 {t:'约19:00',x:'回市区',d:''}]},
 {date:'11/10',wd:'二',title:'远郊 Day B · 水中森林',tag:'待定',todo:1,items:[
-{t:'清晨',x:'水中森林（赶日出船）',d:'船费700铢≈140元 + 门票100铢≈20元，需电话预约船'},
+{t:'清晨',x:'水中森林（赶日出船）',d:'船费700铢≈140元 + 门票100铢≈20元，需电话预约船',q:'水中森林 清迈'},
 {t:'中午',x:'回市区',d:'下午市区自由活动（待排）'}]},
 {date:'11/11',wd:'三',title:'回程',tag:'',items:[
 {t:'白天',x:'市区最后逛吃',d:'行程待排'},
-{t:'21:40',x:'飞回广州',d:'春秋 9C8934，11/12 02:00 到'}]},
+{t:'21:40',x:'飞回广州',d:'春秋 9C8934，11/12 02:00 到',q:'清迈国际机场'}]},
 ];
 /* ===== 逻辑 ===== */
 const $=s=>document.querySelector(s);
@@ -345,11 +356,64 @@ $('#wish-add').onclick=()=>{
   saveCustom(l);renderWish();
 };
 /* --- 行程 --- */
+const TRIP_START='2026-11-04',TRIP_END='2026-11-11';
+const LIMITED={
+ '2026-11-04':["Lotus's 莲花夜市（仅 11/4–11/6 晚上，Chang Phueak 一带）"],
+ '2026-11-05':['Gong Kong Market（仅 11/5、11/6 上午，农学院内）',"Lotus's 莲花夜市（今晚）"],
+ '2026-11-06':['Gong Kong Market（最后机会，仅上午）',"Lotus's 莲花夜市（最后机会）"],
+ '2026-11-07':['周六夜市 + 冰箱贴爷爷（只周六，Wua Lai 路）'],
+ '2026-11-08':['周日步行街（只周日，塔佩门）'],
+ '2026-11-11':['21:40 返程航班 9C8934，提前去机场']
+};
+const FUZZY=[[/清晨|日出/,300,480],[/上午/,540,720],[/中午/,720,840],[/下午/,840,1080],[/晚上|夜市|夜晚/,1080,1320],[/白天/,540,1080],[/全天/,540,1260]];
+function navUrl(q){return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);}
+function evTime(e){
+  const m=e.t.match(/(\d{1,2}):(\d{2})/);
+  if(m)return[+m[1]*60+ +m[2],+m[1]*60+ +m[2]+120];
+  const txt=e.t+' '+e.x;
+  for(const r of FUZZY){if(r[0].test(txt))return[r[1],r[2]];}
+  return null;
+}
+function evRow(e,tag,dim){
+  return `<div class="ev"${dim?' style="opacity:.45"':''}><span class="t">${e.t}</span><span class="x"><b>${e.x}</b>${e.q?` <a class="navlink" href="${navUrl(e.q)}" target="_blank">🧭导航</a>`:''}${tag||''}${e.d?`<span>${e.d}</span>`:''}</span></div>`;
+}
 function renderPlan(){
   $('#plan-list').innerHTML=PLAN.map(d=>`
   <div class="day"><div class="day-head"><span class="date">${d.date}</span><span class="wd">周${d.wd} · ${d.title}</span>${d.tag?`<span class="tag${d.todo?' todo':''}">${d.tag}</span>`:''}</div>
-  ${d.items.map(e=>`<div class="ev"><span class="t">${e.t}</span><span class="x"><b>${e.x}</b>${e.d?`<span>${e.d}</span>`:''}</span></div>`).join('')}
+  ${d.items.map(e=>evRow(e)).join('')}
   </div>`).join('');
+}
+/* --- 时间提醒（替代时间死线） --- */
+function renderRemind(){
+  const box=$('#remind');if(!box)return;
+  const today=todayStr();
+  if(today<TRIP_START){
+    const days=Math.round((new Date(TRIP_START+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);
+    box.innerHTML=`<div class="deadline"><b>⏰ 还有 ${days} 天出发（11/4 周三）</b><ul>${
+      Object.keys(LIMITED).sort().map(k=>`<li><b>${k.slice(5).replace('-','/')}</b>：${LIMITED[k].join('；')}</li>`).join('')
+    }</ul><div style="color:var(--muted);font-size:12px;margin-top:4px">⚠️ 限时事项，错过等下次</div></div>`;
+    return;
+  }
+  if(today>TRIP_END){
+    box.innerHTML=`<div class="deadline"><b>✈️ 行程已结束</b><div style="margin-top:4px">欢迎回来！去地图和想去清单里看看足迹 👣</div></div>`;
+    return;
+  }
+  const key=today.slice(5).split('-').map(Number).join('/');
+  const day=PLAN.find(p=>p.date===key);
+  const lim=LIMITED[today]||[];
+  const mins=new Date().getHours()*60+new Date().getMinutes();
+  let nextMarked=false;
+  const rows=day?day.items.map(e=>{
+    const tw=evTime(e);let tag='',dim=false;
+    if(tw){
+      if(mins>=tw[1]){dim=true;tag=' <span class="pill unknown">已结束</span>';}
+      else if(mins>=tw[0]){tag=' <span class="pill open">进行中</span>';}
+      else if(!nextMarked){nextMarked=true;tag=' <span class="pill" style="background:#fdf3e3;color:var(--accent)">接下来</span>';}
+    }
+    return evRow(e,tag,dim);
+  }).join(''):'';
+  box.innerHTML=`<div class="deadline"><b>📍 今日 ${key} 周${day?day.wd:''}${day?' · '+day.title:''}</b>${rows}${
+    lim.length?`<div class="lim"><b>⚠️ 今日限时</b><br>${lim.join('<br>')}</div>`:''}</div>`;
 }
 /* --- Tab 切换 --- */
 let mapInit=false;
@@ -358,6 +422,7 @@ document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>{
   b.classList.add('on');
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   $('#tab-'+b.dataset.t).classList.add('active');
+  if(b.dataset.t==='plan')renderRemind();
   if(b.dataset.t==='map'&&!mapInit){initMap();mapInit=true;}
   if(b.dataset.t==='map'&&mapInit){setTimeout(()=>map.invalidateSize(),50);}
 });
@@ -476,8 +541,63 @@ const RATE=0.2;
 $('#thb').oninput=e=>{const v=parseFloat(e.target.value);$('#cny').value=v>=0?(v*RATE).toFixed(v<10?1:0):'';convTxt(v,'thb');};
 $('#cny').oninput=e=>{const v=parseFloat(e.target.value);$('#thb').value=v>=0?(v/RATE).toFixed(0):'';convTxt(v,'cny');};
 function convTxt(v,from){$('#convres').innerHTML=!(v>=0)?'':from==='thb'?`<b>${v}</b> 泰铢 ≈ <b>${(v*RATE).toFixed(1)}</b> 元`:`<b>${v}</b> 元 ≈ <b>${(v/RATE).toFixed(0)}</b> 泰铢`;}
+/* --- 翻译（常用泰语速查 + 在线翻译框） --- */
+const PHRASES=[
+{cat:'问候',items:[
+['你好','สวัสดี','sa-wa-di'],['谢谢','ขอบคุณ','khop khun'],['对不起','ขอโทษ','kho thot'],
+['没关系','ไม่เป็นไร','mai pen rai'],['多少钱','เท่าไหร่','thao-rai'],['听不懂','ไม่เข้าใจ','mai khao jai']]},
+{cat:'点餐',items:[
+['这个','อันนี้','an-ni'],['好吃','อร่อย','a-roi'],['不要辣','ไม่เผ็ด','mai phet'],
+['少冰','น้ำแข็งน้อย','nam-khaeng noi'],['买单','เก็บเงินด้วย','kep-ngoen duai'],['打包带走','ใส่ถุง','sai thung']]},
+{cat:'问路·交通',items:[
+['…在哪里','…อยู่ที่ไหน','yu-thi-nai'],['怎么走','ไปยังไง','pai yang-ngai'],['左转','เลี้ยวซ้าย','liao-sai'],
+['右转','เลี้ยวขวา','liao-khwa'],['直走','ตรงไป','trong-pai'],['在这里停','จอดตรงนี้','jot trong-ni'],['开慢一点','ขับช้าหน่อย','khap cha noi']]},
+{cat:'购物',items:[
+['便宜一点','ถูกหน่อย','thuk-noi'],['太贵了','แพงไป','phaeng-pai'],['可以打折吗','ลดได้ไหม','lot dai mai']]},
+{cat:'应急',items:[
+['帮帮我','ช่วยด้วย','chuai-duai'],['医院','โรงพยาบาล','rong-pha-ya-ban'],['警察','ตำรวจ','tam-ruat'],['我迷路了','ผมหลงทาง','phom long-thang']]}
+];
+let phCat='问候';
+function renderPhrases(){
+  $('#ph-cat').innerHTML=PHRASES.map(p=>`<span class="chip${p.cat===phCat?' on':''}" data-c="${p.cat}">${p.cat}</span>`).join('');
+  document.querySelectorAll('#ph-cat .chip').forEach(ch=>ch.onclick=()=>{phCat=ch.dataset.c;renderPhrases();});
+  const g=PHRASES.find(p=>p.cat===phCat);
+  $('#ph-list').innerHTML=g.items.map((it,i)=>`<div class="phrow" data-i="${i}"><span><span class="th">${it[1]}</span><br><span class="zh">${it[0]}</span> <span class="py">${it[2]}</span></span><span style="color:var(--muted);font-size:12px">复制</span></div>`).join('');
+  document.querySelectorAll('#ph-list .phrow').forEach(r=>r.onclick=()=>{const it=g.items[+r.dataset.i];copyTxt(it[1]);});
+}
+function copyTxt(t,msg){
+  const done=()=>toast(msg||('已复制：'+t));
+  const fb=()=>{const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){toast('复制失败，长按手动复制');}document.body.removeChild(ta);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(fb);}else fb();
+}
+function toast(msg){
+  let el=document.getElementById('toast');
+  if(!el){el=document.createElement('div');el.id='toast';el.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw';document.body.appendChild(el);}
+  el.textContent=msg;el.style.opacity='1';
+  clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},1600);
+}
+let trDir='zh-th';
+function trDirUI(){$('#tr-zh-th').className='chip'+(trDir==='zh-th'?' on':'');$('#tr-th-zh').className='chip'+(trDir==='th-zh'?' on':'');}
+$('#tr-zh-th').onclick=()=>{trDir='zh-th';trDirUI();};
+$('#tr-th-zh').onclick=()=>{trDir='th-zh';trDirUI();};
+$('#tr-btn').onclick=async()=>{
+  const q=$('#tr-in').value.trim();
+  if(!q){$('#tr-out').innerHTML='<span style="color:var(--muted)">先输入要翻译的内容</span>';return;}
+  $('#tr-out').innerHTML='<span style="color:var(--muted)">翻译中…</span>';
+  try{
+    const lp=trDir==='zh-th'?'zh-CN|th':'th|zh-CN';
+    const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(q)+'&langpair='+lp);
+    const j=await r.json();
+    const t=j&&j.responseData&&j.responseData.translatedText;
+    if(t&&t.trim()&&t.trim().toLowerCase()!==q.toLowerCase()){
+      $('#tr-out').innerHTML='<div style="font-size:17px;font-weight:600">'+t.replace(/</g,'&lt;')+'</div><button class="checkbtn" id="tr-copy" style="margin-top:6px">复制译文</button>';
+      $('#tr-copy').onclick=()=>copyTxt(t);
+    }else{$('#tr-out').innerHTML='<span style="color:var(--red)">没翻出来，换个说法试试</span>';}
+  }catch(e){$('#tr-out').innerHTML='<span style="color:var(--red)">网络不给力，检查网络再试一次</span>';}
+};
+renderPhrases();
 /* --- init --- */
-renderPlan();renderShops();renderWish();updateProgress();
+renderPlan();renderRemind();renderShops();renderWish();updateProgress();
 </script>
 </body>
 </html>
