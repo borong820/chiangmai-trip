@@ -13,9 +13,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans G
 header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#96521f,#c68a3f);color:#fff;padding:14px 16px 12px}
 header h1{font-size:18px;font-weight:700}
 header .sub{font-size:12px;opacity:.92;margin-top:2px}
-#progress{margin-top:8px;background:rgba(255,255,255,.28);border-radius:99px;height:8px;overflow:hidden}
-#progress i{display:block;height:100%;width:0;background:#fff;border-radius:99px;transition:width .3s}
-#progress-txt{font-size:11px;margin-top:4px;opacity:.92}
+header .en-label{font-size:10px;letter-spacing:2.5px;opacity:.85;margin-top:4px;font-family:Georgia,'Times New Roman',serif}
 main{padding:12px 12px 0}
 .tab{display:none}.tab.active{display:block}
 .deadline{background:#fff7e8;border:1px solid #f5d9a8;border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:13px}
@@ -135,8 +133,6 @@ main{padding:12px 12px 0}
 <h1>🛵 清迈行程小助手</h1>
 <div class="sub">2026.11.4 – 11.11 · borong 的第二次清迈</div>
 <div class="en-label">CHIANG MAI · TRAVEL KIT</div>
-<div id="progress"><i></i></div>
-<div id="progress-txt">打卡 0/16</div>
 </header>
 <main>
 <!-- 行程 -->
@@ -346,14 +342,9 @@ function openStatus(s){
     return open?{c:'open',t:'营业中'}:{c:'closed',t:'已打烊'};}
   return{c:'unknown',t:s.hours||'时间未知'};
 }
-function updateProgress(){
-  const n=checked.size,total=SHOPS.length;
-  $('#progress i').style.width=(n/total*100)+'%';
-  $('#progress-txt').textContent='打卡 '+n+'/'+total+(n===total?' 🎉 全打卡！':'');
-}
 function toggleCheck(id){
   checked.has(id)?checked.delete(id):checked.add(id);
-  saveChecked();updateProgress();refreshCheckUI();updatePins();
+  saveChecked();refreshCheckUI();updatePins();
 }
 /* --- 想去清单（非必去，顺路提醒） --- */
 const WISH=[
@@ -706,7 +697,7 @@ $('#tr-btn').onclick=async()=>{
 };
 renderPhrases();
 /* --- init --- */
-renderPlan();renderRemind();renderShops();renderWish();updateProgress();
+renderPlan();renderRemind();renderShops();renderWish();
 </script>
 </body>
 </html>
