@@ -30,28 +30,7 @@ main{padding:12px 12px 0}
 .phrow .th{font-size:16px;color:var(--ink)}
 .phrow .zh{color:var(--muted);font-size:12px}
 .phrow .py{color:#b09a6a;font-size:11px}
-/* --- 温馨高级手账风 --- */
-.en-label{font-size:10px;letter-spacing:2.5px;opacity:.85;margin-top:4px;font-family:Georgia,'Times New Roman',serif}
-.hero{background:linear-gradient(135deg,#96521f,#c68a3f);border-radius:16px;margin-bottom:12px;padding:10px 10px 2px;box-shadow:0 3px 12px rgba(150,82,31,.25);overflow:hidden}
-.hero-art{width:100%;height:84px;display:block}
-.dolist{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding:2px}
-.dochip{flex:0 0 auto;font-size:12px;padding:7px 13px;border-radius:99px;background:#fdf6e9;border:1px solid #e5cfa0;color:#a85b2a;cursor:pointer;white-space:nowrap}
-.dochip.done{background:#edf2e2;border-color:#bcc79b;color:#6b7f3e}
-.cdcard{text-align:center;position:relative}
-.cdcard .en-label{color:var(--gold);opacity:1}
-.tape{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-2.5deg);width:96px;height:24px;background:rgba(201,162,75,.45);border-left:1px dashed rgba(255,255,255,.7);border-right:1px dashed rgba(255,255,255,.7);border-radius:2px}
-.cd-label{font-size:15px;font-weight:700;margin-top:6px}
-.cd-time{font-size:38px;font-weight:800;color:#8a4a1d;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:4px 0;line-height:1.25}
-.cd-sub{font-size:12px;color:var(--muted)}
-#map{height:calc(100vh - 310px);height:calc(100dvh - 310px);min-height:260px}
-#tabbar{z-index:1500}
-.btn{background:var(--accent);box-shadow:0 3px 10px rgba(150,82,31,.28);border-radius:14px}
-.btn:active{transform:translateY(1px)}
-.btn.ghost{background:var(--card);color:#a85b2a;border:1px solid #d9b98c;box-shadow:none}
-.chip{background:var(--card)}
-.card,.day,.deadline{border:1px solid #f0e2c4;box-shadow:0 2px 10px rgba(150,110,60,.08)}
-.phrow .spk{color:var(--accent);font-size:15px}
-.checkbtn{border-color:#c9a24b;color:#a85b2a;background:var(--card)}
+
 .day{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .day-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
 .day-head .date{font-size:16px;font-weight:700;color:var(--accent)}
@@ -94,7 +73,7 @@ main{padding:12px 12px 0}
 .wishitem.done{opacity:.55}
 .wishitem.done b{text-decoration:line-through}
 .checkbtn.done{background:var(--green);border-color:var(--green);color:#fff}
-#map{height:calc(100vh - 220px);min-height:420px;border-radius:14px;overflow:hidden}
+#map{height:280px;height:calc(100dvh - 380px);min-height:220px;max-height:420px;border-radius:14px;overflow:hidden}
 .mapbar{display:flex;gap:8px;margin-bottom:10px}
 .btn{flex:1;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:10px;font-size:14px;font-weight:600}
 .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
@@ -127,6 +106,27 @@ main{padding:12px 12px 0}
 #tabbar button.on{color:var(--accent);font-weight:700}
 .empty{text-align:center;color:var(--muted);padding:30px 0;font-size:13px}
 .tips{font-size:12px;color:var(--muted);background:#fff;border-radius:10px;padding:8px 12px;margin-bottom:10px}
+/* --- 温馨高级手账风 --- */
+.en-label{font-size:10px;letter-spacing:2.5px;opacity:.85;margin-top:4px;font-family:Georgia,'Times New Roman',serif}
+.hero{background:linear-gradient(135deg,#96521f,#c68a3f);border-radius:16px;margin-bottom:12px;padding:10px 10px 2px;box-shadow:0 3px 12px rgba(150,82,31,.25);overflow:hidden}
+.hero-art{width:100%;height:84px;display:block}
+.dolist{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding:2px}
+.dochip{flex:0 0 auto;font-size:12px;padding:7px 13px;border-radius:99px;background:#fdf6e9;border:1px solid #e5cfa0;color:#a85b2a;cursor:pointer;white-space:nowrap}
+.dochip.done{background:#edf2e2;border-color:#bcc79b;color:#6b7f3e}
+.cdcard{text-align:center;position:relative}
+.cdcard .en-label{color:var(--gold);opacity:1}
+.tape{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-2.5deg);width:96px;height:24px;background:rgba(201,162,75,.45);border-left:1px dashed rgba(255,255,255,.7);border-right:1px dashed rgba(255,255,255,.7);border-radius:2px}
+.cd-label{font-size:15px;font-weight:700;margin-top:6px}
+.cd-time{font-size:38px;font-weight:800;color:#8a4a1d;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:4px 0;line-height:1.25}
+.cd-sub{font-size:12px;color:var(--muted)}
+#tabbar{z-index:1500}
+.btn{background:var(--accent);box-shadow:0 3px 10px rgba(150,82,31,.28);border-radius:14px}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:var(--card);color:#a85b2a;border:1px solid #d9b98c;box-shadow:none}
+.chip{background:var(--card)}
+.card,.day,.deadline{border:1px solid #f0e2c4;box-shadow:0 2px 10px rgba(150,110,60,.08)}
+.phrow .spk{color:var(--accent);font-size:15px}
+.checkbtn{border-color:#c9a24b;color:#a85b2a;background:var(--card)}
 </style>
 </head>
 <body>
