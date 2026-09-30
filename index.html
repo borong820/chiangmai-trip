@@ -7,10 +7,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#faf6ef;--card:#fff;--ink:#2b2b2b;--muted:#8a8a8a;--accent:#d9622b;--accent2:#f5a623;--green:#1e9e6a;--red:#e05252;--line:#eee5d5}
+:root{--bg:#f6f0e2;--card:#fffdf7;--ink:#3a322a;--muted:#9a8b74;--accent:#b45a28;--accent2:#c9a24b;--green:#5f7f3f;--red:#e05252;--line:#eadfc6;--gold:#c9a24b}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
 #app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:76px}
-header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#d9622b,#f5a623);color:#fff;padding:14px 16px 12px}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#96521f,#c68a3f);color:#fff;padding:14px 16px 12px}
 header h1{font-size:18px;font-weight:700}
 header .sub{font-size:12px;opacity:.92;margin-top:2px}
 #progress{margin-top:8px;background:rgba(255,255,255,.28);border-radius:99px;height:8px;overflow:hidden}
@@ -30,6 +30,28 @@ main{padding:12px 12px 0}
 .phrow .th{font-size:16px;color:var(--ink)}
 .phrow .zh{color:var(--muted);font-size:12px}
 .phrow .py{color:#b09a6a;font-size:11px}
+/* --- 温馨高级手账风 --- */
+.en-label{font-size:10px;letter-spacing:2.5px;opacity:.85;margin-top:4px;font-family:Georgia,'Times New Roman',serif}
+.hero{background:linear-gradient(135deg,#96521f,#c68a3f);border-radius:16px;margin-bottom:12px;padding:10px 10px 2px;box-shadow:0 3px 12px rgba(150,82,31,.25);overflow:hidden}
+.hero-art{width:100%;height:84px;display:block}
+.dolist{display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding:2px}
+.dochip{flex:0 0 auto;font-size:12px;padding:7px 13px;border-radius:99px;background:#fdf6e9;border:1px solid #e5cfa0;color:#a85b2a;cursor:pointer;white-space:nowrap}
+.dochip.done{background:#edf2e2;border-color:#bcc79b;color:#6b7f3e}
+.cdcard{text-align:center;position:relative}
+.cdcard .en-label{color:var(--gold);opacity:1}
+.tape{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-2.5deg);width:96px;height:24px;background:rgba(201,162,75,.45);border-left:1px dashed rgba(255,255,255,.7);border-right:1px dashed rgba(255,255,255,.7);border-radius:2px}
+.cd-label{font-size:15px;font-weight:700;margin-top:6px}
+.cd-time{font-size:38px;font-weight:800;color:#8a4a1d;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:4px 0;line-height:1.25}
+.cd-sub{font-size:12px;color:var(--muted)}
+#map{height:calc(100vh - 310px);height:calc(100dvh - 310px);min-height:260px}
+#tabbar{z-index:1500}
+.btn{background:var(--accent);box-shadow:0 3px 10px rgba(150,82,31,.28);border-radius:14px}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:var(--card);color:#a85b2a;border:1px solid #d9b98c;box-shadow:none}
+.chip{background:var(--card)}
+.card,.day,.deadline{border:1px solid #f0e2c4;box-shadow:0 2px 10px rgba(150,110,60,.08)}
+.phrow .spk{color:var(--accent);font-size:15px}
+.checkbtn{border-color:#c9a24b;color:#a85b2a;background:var(--card)}
 .day{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .day-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
 .day-head .date{font-size:16px;font-weight:700;color:var(--accent)}
@@ -112,12 +134,32 @@ main{padding:12px 12px 0}
 <header>
 <h1>🛵 清迈行程小助手</h1>
 <div class="sub">2026.11.4 – 11.11 · borong 的第二次清迈</div>
+<div class="en-label">CHIANG MAI · TRAVEL KIT</div>
 <div id="progress"><i></i></div>
 <div id="progress-txt">打卡 0/16</div>
 </header>
 <main>
 <!-- 行程 -->
 <section class="tab active" id="tab-plan">
+<div class="hero"><svg viewBox="0 0 520 96" class="hero-art" aria-hidden="true" fill="none" stroke="#ffe9c4" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 88H504" stroke-width="2.5"/>
+<circle cx="452" cy="26" r="13" stroke-width="3" fill="rgba(255,233,196,.25)"/>
+<path d="M452 5v6M473 26h6M452 41v6M431 26h6" stroke-width="3"/>
+<path d="M148 28q5-6 10 0q5-6 10 0" stroke-width="2.5"/>
+<path d="M176 20q4-5 8 0q4-5 8 0" stroke-width="2.5"/>
+<path d="M44 86V60h9v-7h9v7h9v-7h9v7h9v-7h9v7h9v-7h9v7h8V86" stroke-width="3"/>
+<path d="M76 86v-10a8 8 0 0 1 16 0v10" stroke-width="2.5"/>
+<path d="M216 50Q266 40 316 50" stroke-width="3.5"/>
+<path d="M228 50v8M304 50v8" stroke-width="2.5"/>
+<rect x="222" y="58" width="88" height="20" rx="7" stroke-width="3"/>
+<path d="M232 68h68" stroke-width="2"/>
+<circle cx="244" cy="81" r="6.5" stroke-width="3"/>
+<circle cx="292" cy="81" r="6.5" stroke-width="3"/>
+<path d="M388 88C384 74 380 62 376 52" stroke-width="3.5"/>
+<path d="M376 52Q360 44 348 48M376 52Q364 38 350 38M376 52Q392 44 404 48M376 52Q388 38 402 38" stroke-width="2.5"/>
+<circle cx="372" cy="55" r="3" fill="#ffe9c4" stroke="none"/>
+<circle cx="381" cy="56" r="3" fill="#ffe9c4" stroke="none"/>
+</svg></div>
 <div id="remind"></div>
 <div id="plan-list"></div>
 </section>
@@ -155,7 +197,7 @@ main{padding:12px 12px 0}
 <div class="card"><h3>💱 泰铢 ↔ 人民币 <span style="font-size:11px;color:var(--muted)">约 5铢 ≈ 1块</span></h3>
 <div class="conv"><input id="thb" inputmode="decimal" placeholder="泰铢 THB"><span class="eq">≈</span><input id="cny" inputmode="decimal" placeholder="人民币 CNY"></div>
 <div class="convres" id="convres"></div></div>
-<div class="card"><h3>🈯 泰语翻译 <span style="font-size:11px;color:var(--muted)">点短语复制泰文</span></h3>
+<div class="card"><h3>🈯 泰语翻译 <span style="font-size:11px;color:var(--muted)">点短语朗读泰文</span></h3>
 <div class="chips" id="ph-cat"></div>
 <div id="ph-list"></div>
 <div class="conv" style="margin-top:10px"><input id="tr-in" placeholder="输入中文或泰文…"><button class="btn" id="tr-btn" style="flex:0 0 auto;padding:10px 16px">翻译</button></div>
@@ -383,38 +425,92 @@ function renderPlan(){
   ${d.items.map(e=>evRow(e)).join('')}
   </div>`).join('');
 }
-/* --- 时间提醒（替代时间死线） --- */
+/* --- 已办 / 待办 --- */
+const CHECKLIST=[
+ {t:'往返机票已出票',done:true},
+ {t:'两家住宿已订',done:true},
+ {t:'远郊包车',done:false},
+ {t:'丛林飞跃',done:false},
+ {t:'厨房课',done:false},
+ {t:'水中森林预约船',done:false},
+ {t:'sanpakoi 早市',done:false}
+];
+let todosDone={};try{todosDone=JSON.parse(safeLS.getItem('cm_trip_todos_v1')||'{}');}catch(e){}
+CHECKLIST.forEach((c,i)=>{if(todosDone[i]!==undefined)c.done=!!todosDone[i];});
+function toggleTodo(i){CHECKLIST[i].done=!CHECKLIST[i].done;todosDone[i]=CHECKLIST[i].done;safeLS.setItem('cm_trip_todos_v1',JSON.stringify(todosDone));renderRemind();}
+/* --- 大倒计时：下一个关键节点 --- */
+function planKey(dateMd){return '2026-'+dateMd.split('/').map(x=>String(x).padStart(2,'0')).join('-');}
+function nextTarget(){
+  const today=todayStr();
+  const fly={label:'广州起飞',sub:'春秋 9C8933 · 建议提前2小时到机场',at:new Date('2026-11-04T05:55:00')};
+  if(today<TRIP_START)return fly;
+  if(today>TRIP_END)return null;
+  const mins=new Date().getHours()*60+new Date().getMinutes();
+  if(today===TRIP_START&&mins<355)return fly;
+  for(const d of PLAN){
+    const key=planKey(d.date);
+    if(key<today)continue;
+    for(const e of d.items){
+      const tw=evTime(e);if(!tw)continue;
+      if(key===today&&tw[0]<=mins)continue;
+      const at=new Date(key+'T00:00:00');at.setMinutes(tw[0]);
+      return{label:e.x,sub:d.date+' 周'+d.wd+' '+e.t,at};
+    }
+  }
+  return null;
+}
+function tick(){
+  const el=document.getElementById('cd-time');if(!el)return;
+  const tg=nextTarget();
+  const lab=document.getElementById('cd-label'),sub=document.getElementById('cd-sub');
+  if(!tg){el.textContent='— —';if(lab)lab.textContent='✈️ 行程已结束';if(sub)sub.textContent='欢迎回来翻翻足迹';return;}
+  let diff=Math.max(0,tg.at-new Date());
+  const d=Math.floor(diff/86400000);diff-=d*86400000;
+  const h=Math.floor(diff/3600000);diff-=h*3600000;
+  const m=Math.floor(diff/60000);diff-=m*60000;
+  const s=Math.floor(diff/1000);
+  const p=n=>String(n).padStart(2,'0');
+  el.textContent=(d>0?d+'天 ':'')+p(h)+':'+p(m)+':'+p(s);
+  if(lab&&lab.dataset.k!==tg.label){lab.dataset.k=tg.label;lab.textContent='距 '+tg.label;if(sub)sub.textContent=tg.sub;}
+}
+/* --- 时间提醒（已办待办 + 大倒计时 + 今日总览） --- */
 function renderRemind(){
   const box=$('#remind');if(!box)return;
   const today=todayStr();
-  if(today<TRIP_START){
-    const days=Math.round((new Date(TRIP_START+'T00:00:00')-new Date(today+'T00:00:00'))/86400000);
-    box.innerHTML=`<div class="deadline"><b>⏰ 还有 ${days} 天出发（11/4 周三）</b><ul>${
-      Object.keys(LIMITED).sort().map(k=>`<li><b>${k.slice(5).replace('-','/')}</b>：${LIMITED[k].join('；')}</li>`).join('')
-    }</ul><div style="color:var(--muted);font-size:12px;margin-top:4px">⚠️ 限时事项，错过等下次</div></div>`;
-    return;
-  }
+  const doHtml=`<div class="dolist">${CHECKLIST.map((c,i)=>`<span class="dochip${c.done?' done':''}" onclick="toggleTodo(${i})">${c.done?'✅':'○'} ${c.t}</span>`).join('')}</div>`;
+  const cdHtml=`<div class="deadline cdcard"><div class="tape"></div><div class="en-label">COUNTDOWN</div><div class="cd-label" id="cd-label" data-k=""></div><div class="cd-time" id="cd-time">--:--:--</div><div class="cd-sub" id="cd-sub"></div></div>`;
   if(today>TRIP_END){
-    box.innerHTML=`<div class="deadline"><b>✈️ 行程已结束</b><div style="margin-top:4px">欢迎回来！去地图和想去清单里看看足迹 👣</div></div>`;
+    box.innerHTML=doHtml+`<div class="deadline"><b>✈️ 行程已结束</b><div style="margin-top:4px">欢迎回来！去地图和想去清单里看看足迹 👣</div></div>`;
     return;
   }
-  const key=today.slice(5).split('-').map(Number).join('/');
-  const day=PLAN.find(p=>p.date===key);
-  const lim=LIMITED[today]||[];
-  const mins=new Date().getHours()*60+new Date().getMinutes();
-  let nextMarked=false;
-  const rows=day?day.items.map(e=>{
-    const tw=evTime(e);let tag='',dim=false;
-    if(tw){
-      if(mins>=tw[1]){dim=true;tag=' <span class="pill unknown">已结束</span>';}
-      else if(mins>=tw[0]){tag=' <span class="pill open">进行中</span>';}
-      else if(!nextMarked){nextMarked=true;tag=' <span class="pill" style="background:#fdf3e3;color:var(--accent)">接下来</span>';}
-    }
-    return evRow(e,tag,dim);
-  }).join(''):'';
-  box.innerHTML=`<div class="deadline"><b>📍 今日 ${key} 周${day?day.wd:''}${day?' · '+day.title:''}</b>${rows}${
-    lim.length?`<div class="lim"><b>⚠️ 今日限时</b><br>${lim.join('<br>')}</div>`:''}</div>`;
+  let tail='';
+  if(today<TRIP_START){
+    tail=`<div class="deadline"><b>⏰ 限时事项（错过等下次）</b><ul>${
+      Object.keys(LIMITED).sort().map(k=>`<li><b>${k.slice(5).replace('-','/')}</b>：${LIMITED[k].join('；')}</li>`).join('')
+    }</ul></div>`;
+  }else{
+    const key=today.slice(5).split('-').map(Number).join('/');
+    const day=PLAN.find(p=>p.date===key);
+    const lim=LIMITED[today]||[];
+    const mins=new Date().getHours()*60+new Date().getMinutes();
+    let nextMarked=false;
+    const rows=day?day.items.map(e=>{
+      const tw=evTime(e);let tag='',dim=false;
+      if(tw){
+        if(mins>=tw[1]){dim=true;tag=' <span class="pill unknown">已结束</span>';}
+        else if(mins>=tw[0]){tag=' <span class="pill open">进行中</span>';}
+        else if(!nextMarked){nextMarked=true;tag=' <span class="pill" style="background:#fdf3e3;color:var(--accent)">接下来</span>';}
+      }
+      return evRow(e,tag,dim);
+    }).join(''):'';
+    tail=`<div class="deadline"><b>📍 今日 ${key} 周${day?day.wd:''}${day?' · '+day.title:''}</b>${rows}${
+      lim.length?`<div class="lim"><b>⚠️ 今日限时</b><br>${lim.join('<br>')}</div>`:''}</div>`;
+  }
+  box.innerHTML=doHtml+cdHtml+tail;
+  tick();
 }
+setInterval(tick,1000);
+
 /* --- Tab 切换 --- */
 let mapInit=false;
 document.querySelectorAll('#tabbar button').forEach(b=>b.onclick=()=>{
@@ -562,8 +658,8 @@ function renderPhrases(){
   $('#ph-cat').innerHTML=PHRASES.map(p=>`<span class="chip${p.cat===phCat?' on':''}" data-c="${p.cat}">${p.cat}</span>`).join('');
   document.querySelectorAll('#ph-cat .chip').forEach(ch=>ch.onclick=()=>{phCat=ch.dataset.c;renderPhrases();});
   const g=PHRASES.find(p=>p.cat===phCat);
-  $('#ph-list').innerHTML=g.items.map((it,i)=>`<div class="phrow" data-i="${i}"><span><span class="th">${it[1]}</span><br><span class="zh">${it[0]}</span> <span class="py">${it[2]}</span></span><span style="color:var(--muted);font-size:12px">复制</span></div>`).join('');
-  document.querySelectorAll('#ph-list .phrow').forEach(r=>r.onclick=()=>{const it=g.items[+r.dataset.i];copyTxt(it[1]);});
+  $('#ph-list').innerHTML=g.items.map((it,i)=>`<div class="phrow" data-i="${i}"><span><span class="th">${it[1]}</span><br><span class="zh">${it[0]}</span> <span class="py">${it[2]}</span></span><span class="spk">🔊</span></div>`).join('');
+  document.querySelectorAll('#ph-list .phrow').forEach(r=>r.onclick=()=>{const it=g.items[+r.dataset.i];speak(it[1],'th-TH');});
 }
 function copyTxt(t,msg){
   const done=()=>toast(msg||('已复制：'+t));
@@ -575,6 +671,18 @@ function toast(msg){
   if(!el){el=document.createElement('div');el.id='toast';el.style.cssText='position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;z-index:3000;opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw';document.body.appendChild(el);}
   el.textContent=msg;el.style.opacity='1';
   clearTimeout(el._t);el._t=setTimeout(()=>{el.style.opacity='0';},1600);
+}
+function speak(text,lang){
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=lang||'th-TH';u.rate=0.92;
+    const vs=speechSynthesis.getVoices()||[];
+    const want=(lang||'th-TH').slice(0,2).toLowerCase();
+    const v=vs.find(x=>x.lang&&x.lang.toLowerCase().replace('_','-').indexOf(want)===0);
+    if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){toast('朗读失败，换系统浏览器试试');}
 }
 let trDir='zh-th';
 function trDirUI(){$('#tr-zh-th').className='chip'+(trDir==='zh-th'?' on':'');$('#tr-th-zh').className='chip'+(trDir==='th-zh'?' on':'');}
@@ -590,8 +698,9 @@ $('#tr-btn').onclick=async()=>{
     const j=await r.json();
     const t=j&&j.responseData&&j.responseData.translatedText;
     if(t&&t.trim()&&t.trim().toLowerCase()!==q.toLowerCase()){
-      $('#tr-out').innerHTML='<div style="font-size:17px;font-weight:600">'+t.replace(/</g,'&lt;')+'</div><button class="checkbtn" id="tr-copy" style="margin-top:6px">复制译文</button>';
+      $('#tr-out').innerHTML='<div style="font-size:17px;font-weight:600">'+t.replace(/</g,'&lt;')+'</div><div style="margin-top:8px"><button class="checkbtn" id="tr-speak">🔊 朗读</button> <button class="checkbtn" id="tr-copy">复制译文</button></div>';
       $('#tr-copy').onclick=()=>copyTxt(t);
+      $('#tr-speak').onclick=()=>speak(t,trDir==='zh-th'?'th-TH':'zh-CN');
     }else{$('#tr-out').innerHTML='<span style="color:var(--red)">没翻出来，换个说法试试</span>';}
   }catch(e){$('#tr-out').innerHTML='<span style="color:var(--red)">网络不给力，检查网络再试一次</span>';}
 };
