@@ -424,7 +424,8 @@ const CHECKLIST=[
  {t:'丛林飞跃',done:false},
  {t:'厨房课',done:false},
  {t:'水中森林预约船',done:false},
- {t:'sanpakoi 早市',done:false}
+ {t:'sanpakoi 早市',done:false},
+ {t:'银行兑换泰铢',done:false}
 ];
 let todosDone={};try{todosDone=JSON.parse(safeLS.getItem('cm_trip_todos_v1')||'{}');}catch(e){}
 CHECKLIST.forEach((c,i)=>{if(todosDone[i]!==undefined)c.done=!!todosDone[i];});
