@@ -261,6 +261,7 @@ const SHOPS=[
 {id:'khagee',tier:3,tierWhy:'可露丽+胡萝卜蛋糕，顺路可去',name:'khagee',cat:'dessert',catName:'甜品',lat:18.78623,lng:99.00530,addr:'29/30 Chiang Mai-Lamphun Soi 1',hours:'10:00–17:00',price:'胡萝卜蛋糕95铢≈19元 / 可露丽75铢≈15元',intro:'日式小店，杯状胡萝卜蛋糕、可露丽（混朗姆酒）',tips:'胡萝卜蛋糕建议提前电话预订；部分来源称周一二闭店。',note:XHS+'6a7291b80000000032032325'},
 {id:'hotel1',name:'Wachira@Rachamankha（住宿①）',cat:'hotel',catName:'住宿',lat:18.78585,lng:98.98543,addr:'106 Rachamankha Rd',hours:'',price:'到店付3600铢',intro:'11/4–11/8 古城住宿',tips:'订单号 11574；14:00 入住 / 12:00 退房；11/4 早上到可先寄存行李。',note:'',photo:'https://images.sembo.travel/ImageService/ImageHandler.ashx?service=url&nameOfImage=https%3A%2F%2Fi.travelapi.com%2Flodging%2F2000000%2F1100000%2F1099700%2F1099622%2F65a87af7_z.jpg&resizeMode=FitInside&semboApp=true'},
 {id:'hotel2',name:'宁曼住宿②',cat:'hotel',catName:'住宿',lat:18.7992,lng:98.96918,approx:1,addr:'29 Nimmanahaemin Soi 3',hours:'',price:'—',intro:'11/8–11/11 宁曼住宿',tips:'11/8 从古城搬过来。',note:'',photo:'https://www.ultimatechinaguide.com/media/uploads/2022/07/02/nimman.jpeg'},
+{id:'wasana',tier:2,tierWhy:'你分享的笔记：古城内性价比马杀鸡',name:'Wasana Massage วาสนา',cat:'massage',catName:'按摩',lat:18.79265,lng:98.98996,addr:'167/10 Ratchaphakhinai Rd, Si Phum（古城内）',hours:'10:00–24:00',price:'泰式/足底250铢≈50元/时，油按350铢≈70元/时起',intro:'古城内性价比马杀鸡，250铢1小时',tips:'按摩前柠檬片洗脚、按完送冰水；电话 083-495007；有评论称"11-15号店休"（月份不明，去前确认）',note:XHS+'69eb69ff00000000380369d0',photo:PH},
 /* --- 评论区挖宝新增（4篇分享笔记评论区，2026-09-29） --- */
 {id:'sosood',tier:1,tierWhy:'3篇笔记+4条评论交叉证实',name:'So Sood 面条',cat:'eat',catName:'吃',lat:18.78588,lng:98.98246,addr:'Rachamankha Rd（古城）',hours:'',price:'小红书¥19/人；网友说人均40-50元',intro:'三文鱼新鲜，多条评论交叉证实好吃',tips:'作者跟评：面条要点对，别吃错了。',note:XHS+'6a914cfb000000000303dfa5',photo:PH},
 {id:'wichienbury',tier:1,tierWhy:'多人实测2-3刷',name:'Roast Chicken Wichienbury 宁曼11巷烤鸡',cat:'eat',catName:'吃',lat:18.79689,lng:98.96857,approx:1,addr:'宁曼11巷一带（位置约略）',hours:'',price:'—',intro:'烤鸡翅+辣青木瓜沙拉，多人2-3刷验证',tips:'13赞最高赞推荐；"离开那天没吃到成遗憾"。',note:XHS+'69cb71d60000000022027dc3',photo:PH},
@@ -325,7 +326,7 @@ const PLAN=[
 ];
 /* ===== 逻辑 ===== */
 const $=s=>document.querySelector(s);
-const CATCOLOR={eat:'#e05252',dessert:'#e08bb0',market:'#f5a623',exp:'#1e9e6a',shop:'#9b59b6',hotel:'#34495e'};
+const CATCOLOR={eat:'#e05252',dessert:'#e08bb0',market:'#f5a623',exp:'#1e9e6a',shop:'#9b59b6',hotel:'#34495e',massage:'#5b8dd9'};
 let memStore={};
 const safeLS={
  getItem(k){try{return localStorage.getItem(k);}catch(e){return memStore[k]||null;}},
@@ -596,7 +597,7 @@ function effTier(s){return tierOv[s.id]||s.tier||0;}
 function setTier(id,t){if(t)tierOv[id]=t;else delete tierOv[id];safeLS.setItem('cm_trip_tierov_v1',JSON.stringify(tierOv));updatePins();renderShops();if(typeof renderNear==='function')renderNear();openShop(id);}
 function tierBadge(s){const t=effTier(s);return t?`<span class="tier ${TIERS[t][1]}" title="${tierOv[s.id]?'你自己调整过的级别':''}">${TIERS[t][0]}${tierOv[s.id]?' ✎':''}</span>`:'';}
 function renderShops(){
-  const cats=['全部','吃','甜品','市场','体验','购物','住宿'];
+  const cats=['全部','吃','甜品','市场','体验','按摩','购物','住宿'];
   $('#chips').innerHTML=cats.map(c=>`<span class="chip${c===curCat?' on':''}" data-c="${c}">${c}</span>`).join('');
   document.querySelectorAll('#chips .chip').forEach(ch=>ch.onclick=()=>{curCat=ch.dataset.c;renderShops();});
   const tierNames=['全部','🥇 必去','🥈 值得去','🥉 顺路去'];
