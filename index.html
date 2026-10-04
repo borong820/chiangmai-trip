@@ -359,7 +359,6 @@ const WISH=[
 {id:'w-crab',name:'炸软壳蟹大排档',tag:'吃 · 晚上营业',desc:'店名未知，人均约50元，晚上营业；作者称"清迈最好吃的软壳蟹"'},
 {id:'w-ontherock',name:'On The Rock 烤肉+瓦罐火锅',tag:'晚餐备选 · 古城西南',desc:'猪肉套餐+3杯饮料两人不到120元；17:00到、18:30前日落最美；景观位需预约，19:00后不能walk-in'},
 {id:'w-chickenleg',name:'宁曼烤鸡腿大叔',tag:'宁曼路 · 晚上',desc:'在yellow后面空地，出摊不稳定、19点左右可能卖完；很juicy，还卖木瓜沙拉（位置为网友分享，未经核实）'},
-{id:'w-cook',name:'厨房课（二选一，待定）',tag:'待定',desc:'Zabb E Lee（稻田农场，约240元/人）/ Raniy（约200元/人现金，周六不营业）/ 奶奶厨房（约185元起，有中文老师）'},
 {id:'w-chamcha',name:'Chamcha Market 雨树手工市集',tag:'市集 · 顺路可逛',desc:'大树下的手工市集；另有 Kadmanee Market（周末市集）'},
 {id:'w-pandan',name:'711 斑斓椰子卷',tag:'任意711顺路买',desc:'7-11就能买到的斑斓椰子卷小零食'},
 {id:'w-bigbag',name:'711 Big Bag 洋葱圈',tag:'任意711顺路买',desc:'7-11的 Big Bag 洋葱圈零食'},
@@ -371,8 +370,8 @@ const WISH=[
 {id:'w-khaotom',name:'ข้าวต้มนายดำ 2',tag:'🥈 · 吃',desc:'小红书4.8分，人均40-50元，多条评论强推（分店多，去前查一下"2店"位置）'},
 {id:'w-houmen',name:'清迈大学后门小吃街',tag:'🥉 · 后门顺路',desc:'酸辣排骨汤（酸爽便宜）+ 炸鸡摊爷爷奶奶（炸鸡腿"一次买了20个"）+ 食堂二楼牛油果冰沙'},
 {id:'w-tapaedapao',name:'塔佩门旁边打抛饭',tag:'🥉 · 塔佩门顺路',desc:'"在清迈吃的数一数二的打抛饭"（具体店名不明，塔佩门附近找找）'},
-{id:'w-painter',name:'找画师画画',tag:'🥉 · 体验',desc:'100铢≈20元/人，很有纪念意义（位置为网友分享，未经核实）'}
-];
+{id:'w-painter',name:'找画师画画',tag:'🥉 · 体验',desc:'100铢≈20元/人，很有纪念意义（位置为网友分享，未经核实）'},
+{id:'w-shooting',name:'射击馆',tag:'待定',desc:'去哪家、哪天去待定'}];
 let wishDone=new Set(JSON.parse(safeLS.getItem('cm_trip_wish_v1')||'[]'));
 function saveWish(){safeLS.setItem('cm_trip_wish_v1',JSON.stringify([...wishDone]));}
 function wishCustom(){try{return JSON.parse(safeLS.getItem('cm_trip_wish_custom_v1')||'[]');}catch(e){return[];}}
