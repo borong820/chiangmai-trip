@@ -424,19 +424,6 @@ function renderPlan(){
   ${d.items.map(e=>evRow(e)).join('')}
   </div>`).join('');
 }
-/* --- 已办 / 待办 --- */
-const CHECKLIST=[
- {t:'往返机票已出票',done:true},
- {t:'两家住宿已订',done:true},
- {t:'远郊包车',done:false},
- {t:'丛林飞跃',done:false},
- {t:'厨房课',done:false},
- {t:'sanpakoi 早市',done:false},
- {t:'银行兑换泰铢',done:false}
-];
-let todosDone={};try{todosDone=JSON.parse(safeLS.getItem('cm_trip_todos_v1')||'{}');}catch(e){}
-CHECKLIST.forEach((c,i)=>{if(todosDone[i]!==undefined)c.done=!!todosDone[i];});
-function toggleTodo(i){CHECKLIST[i].done=!CHECKLIST[i].done;todosDone[i]=CHECKLIST[i].done;safeLS.setItem('cm_trip_todos_v1',JSON.stringify(todosDone));renderRemind();}
 /* --- 大倒计时：下一个关键节点 --- */
 function planKey(dateMd){return '2026-'+dateMd.split('/').map(x=>String(x).padStart(2,'0')).join('-');}
 function nextTarget(){
@@ -476,10 +463,9 @@ function tick(){
 function renderRemind(){
   const box=$('#remind');if(!box)return;
   const today=todayStr();
-  const doHtml=`<div class="dolist">${CHECKLIST.map((c,i)=>`<span class="dochip${c.done?' done':''}" onclick="toggleTodo(${i})">${c.done?'✅':'○'} ${c.t}</span>`).join('')}</div>`;
   const cdHtml=`<div class="deadline cdcard"><div class="tape"></div><div class="en-label">COUNTDOWN</div><div class="cd-label" id="cd-label" data-k=""></div><div class="cd-time" id="cd-time">--:--:--</div><div class="cd-sub" id="cd-sub"></div></div>`;
   if(today>TRIP_END){
-    box.innerHTML=doHtml+`<div class="deadline"><b>✈️ 行程已结束</b><div style="margin-top:4px">欢迎回来！去地图和想去清单里看看足迹 👣</div></div>`;
+    box.innerHTML=`<div class="deadline"><b>✈️ 行程已结束</b><div style="margin-top:4px">欢迎回来！去地图和想去清单里看看足迹 👣</div></div>`;
     return;
   }
   let tail='';
@@ -505,7 +491,7 @@ function renderRemind(){
     tail=`<div class="deadline"><b>📍 今日 ${key} 周${day?day.wd:''}${day?' · '+day.title:''}</b>${rows}${
       lim.length?`<div class="lim"><b>⚠️ 今日限时</b><br>${lim.join('<br>')}</div>`:''}</div>`;
   }
-  box.innerHTML=doHtml+cdHtml+tail;
+  box.innerHTML=cdHtml+tail;
   tick();
 }
 setInterval(tick,1000);
