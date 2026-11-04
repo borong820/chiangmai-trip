@@ -200,6 +200,10 @@ main{padding:12px 12px 0}
 <div style="margin-top:8px"><span class="chip on" id="tr-zh-th">中 → 泰</span> <span class="chip" id="tr-th-zh">泰 → 中</span></div>
 <div id="tr-out" style="font-size:14px;margin-top:8px;min-height:20px"></div>
 <div style="font-size:11px;color:var(--muted);margin-top:4px">在线翻译需联网，机器翻译仅供参考</div></div>
+<div class="card"><h3>🔤 英语翻译 <span style="font-size:11px;color:var(--muted)">点译文复制</span></h3>
+<div class="conv" style="margin-top:10px"><input id="tr-en-in" placeholder="输入中文…"><button class="btn" id="tr-en-btn" style="flex:0 0 auto;padding:10px 16px">翻译</button></div>
+<div id="tr-en-out" style="font-size:14px;margin-top:8px;min-height:20px"></div>
+<div style="font-size:11px;color:var(--muted);margin-top:4px">在线翻译需联网，机器翻译仅供参考</div></div>
 <div class="card"><h3>✈️ 航班（春秋航空·已订）</h3>
 <div class="row"><span class="k">去程 9C8933 · 11/4</span><span>05:55 广州T3 → 08:15 清迈</span></div>
 <div class="row"><span class="k">回程 9C8934 · 11/11</span><span>21:40 清迈 → 02:00+1 广州</span></div></div>
@@ -703,6 +707,22 @@ $('#tr-btn').onclick=async()=>{
       $('#tr-speak').onclick=()=>speak(t,trDir==='zh-th'?'th-TH':'zh-CN');
     }else{$('#tr-out').innerHTML='<span style="color:var(--red)">没翻出来，换个说法试试</span>';}
   }catch(e){$('#tr-out').innerHTML='<span style="color:var(--red)">网络不给力，检查网络再试一次</span>';}
+};
+/* --- 英语翻译框（中 → 英） --- */
+$('#tr-en-btn').onclick=async()=>{
+  const q=$('#tr-en-in').value.trim();
+  if(!q){$('#tr-en-out').innerHTML='<span style="color:var(--muted)">先输入要翻译的内容</span>';return;}
+  $('#tr-en-out').innerHTML='<span style="color:var(--muted)">翻译中…</span>';
+  try{
+    const r=await fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(q)+'&langpair=zh-CN|en');
+    const j=await r.json();
+    const t=j&&j.responseData&&j.responseData.translatedText;
+    if(t&&t.trim()&&t.trim().toLowerCase()!==q.toLowerCase()){
+      $('#tr-en-out').innerHTML='<div style="font-size:17px;font-weight:600">'+t.replace(/</g,'&lt;')+'</div><div style="margin-top:8px"><button class="checkbtn" id="tr-en-speak">🔊 朗读</button> <button class="checkbtn" id="tr-en-copy">复制译文</button></div>';
+      $('#tr-en-copy').onclick=()=>copyTxt(t);
+      $('#tr-en-speak').onclick=()=>speak(t,'en-US');
+    }else{$('#tr-en-out').innerHTML='<span style="color:var(--red)">没翻出来，换个说法试试</span>';}
+  }catch(e){$('#tr-en-out').innerHTML='<span style="color:var(--red)">网络不给力，检查网络再试一次</span>';}
 };
 renderPhrases();
 /* --- init --- */
